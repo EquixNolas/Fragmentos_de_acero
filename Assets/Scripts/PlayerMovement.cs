@@ -38,7 +38,7 @@ public class PlayerMovement : MonoBehaviour
     //WALL JUMP
     [Header("Wall Jump")] //sección de salto de la pared
     [SerializeField]float wallJumpTime = 0.2f; //Tiempo del salto de la pared
-    [SerializeField]Vector2 wallJumpPower = new Vector2(1f, 10f); //Fuerza del salto de la pared
+    [SerializeField]Vector2 wallJumpPower = new Vector2(1f, 8f); //Fuerza del salto de la pared
     [SerializeField] float wallSlideSpeed = 2f; //Velocidad de deslizamiento por la pared
     [SerializeField] Transform wallCheck; //Empty object que verifica si estas en la pared
     [SerializeField] LayerMask wallLayer; //Layer de la pared
@@ -93,7 +93,8 @@ public class PlayerMovement : MonoBehaviour
             Propulsion(); //Se llama la función de propulsión
         }
 
-        Debug.Log("Timer restante "+ wallJumpTimer);
+        Debug.Log("Direccion del jump "+ Mathf.Sign(wallJumpDirection));
+        Debug.Log("Movimiento " + Mathf.Sign(horizontalMove));
     }
 
     bool IsGrounded() //Verifica si el Player está en el suelo
@@ -129,7 +130,7 @@ public class PlayerMovement : MonoBehaviour
     public void Jump(InputAction.CallbackContext context) 
     {
         //Se verifica si se presiona el botón de salto
-        if (context.started)  
+        if (context.started && !isWallJumping)  
         {
             DoJump(); //Se llama a la función de salto
         }
@@ -149,7 +150,9 @@ public class PlayerMovement : MonoBehaviour
         if (context.performed && wallJumpTimer > 0f)
         {
             isWallJumping = true; //Se activa la variable de salto de la pared
+
             rb.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); //Se aplica la fuerza del salto de la pared
+
             wallJumpTimer = 0f; //Se reinicia el tiempo del salto de la pared
 
             Debug.Log("Wall Jump"); //Se imprime en la consola el salto de la pared
@@ -270,7 +273,7 @@ public class PlayerMovement : MonoBehaviour
         if (isWallSliding)
         {
             isWallJumping = false;
-            wallJumpDirection = -transform.localScale.x; //Se asigna la dirección del salto de la
+            wallJumpDirection = -transform.localScale.x; //Se asigna la dirección del salto de la pared
             wallJumpTimer = wallJumpTime; //Se asigna el tiempo del salto de la pared
 
             CancelInvoke(nameof(CancelWallJump)); //Se cancela la invocación de la función de detener el salto de la pared 

@@ -2097,7 +2097,7 @@ MonoBehaviour:
   totalExtraJumps: 1
   fallMultiplier: 1.2
   wallJumpTime: 0.2
-  wallJumpPower: {x: 5, y: 10}
+  wallJumpPower: {x: 1, y: 8}
   wallSlideSpeed: 2
   wallCheck: {fileID: 9183975081173087487}
   wallLayer:
