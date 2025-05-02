@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &720545138659548473
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5498412066786033640}
+  m_Layer: 0
+  m_Name: Wall Check
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5498412066786033640
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720545138659548473}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.067, y: -0.055, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2126279811558466797}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3707014599322944531
 GameObject:
   m_ObjectHideFlags: 0
@@ -11,7 +42,7 @@ GameObject:
   - component: {fileID: 5503763684034513655}
   - component: {fileID: 3345794541894306794}
   m_Layer: 0
-  m_Name: DashTrail
+  m_Name: Dash Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,7 +106,7 @@ TrailRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 4
   m_Time: 0.2
-  m_PreviewTimeScale: 0.18
+  m_PreviewTimeScale: 1
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -156,7 +187,7 @@ GameObject:
   - component: {fileID: 4088276729770928989}
   - component: {fileID: 8863305076694240615}
   m_Layer: 0
-  m_Name: groundCheck
+  m_Name: Ground Check
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -250,6 +281,7 @@ Transform:
   m_Children:
   - {fileID: 4088276729770928989}
   - {fileID: 5503763684034513655}
+  - {fileID: 5498412066786033640}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8974736351250199982
@@ -526,6 +558,7 @@ MonoBehaviour:
   jumpForce: 10
   totalExtraJumps: 1
   fallMultiplier: 1.2
+  canDoubleJump: 0
   planeoSpeed: 2
   dashForce: 15
   dashTime: 0.2
