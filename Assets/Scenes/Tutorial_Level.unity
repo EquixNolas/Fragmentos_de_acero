@@ -998,7 +998,7 @@ Transform:
   m_GameObject: {fileID: 1223970096}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.51, y: 0.5141, z: 0.010407743}
+  m_LocalPosition: {x: 5.51, y: 4.5573, z: 0.010407743}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1041,7 +1041,7 @@ PolygonCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 4.946396}
+    newSize: {x: 1, y: 13.032792}
     adaptiveTilingThreshold: 0.5
     drawMode: 2
     adaptiveTiling: 0
@@ -1099,7 +1099,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 1, y: 4.946396}
+  m_Size: {x: 1, y: 13.032792}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1822,7 +1822,7 @@ Transform:
   m_GameObject: {fileID: 2101747814}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.59, y: 3.16, z: 0.010407743}
+  m_LocalPosition: {x: 1.59, y: 5.8634, z: 0.010407743}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1865,7 +1865,7 @@ PolygonCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 4.946396}
+    newSize: {x: 1, y: 10.353268}
     adaptiveTilingThreshold: 0.5
     drawMode: 2
     adaptiveTiling: 0
@@ -1923,7 +1923,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 1, y: 4.946396}
+  m_Size: {x: 1, y: 10.353268}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -2092,14 +2092,17 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   speed: 5
+  canDoubleJump: 0
   jumpForce: 10
   totalExtraJumps: 1
   fallMultiplier: 1.2
+  wallJumpTime: 0.2
+  wallJumpPower: {x: 5, y: 10}
+  wallSlideSpeed: 2
   wallCheck: {fileID: 9183975081173087487}
   wallLayer:
     serializedVersion: 2
     m_Bits: 128
-  canDoubleJump: 0
   planeoSpeed: 2
   dashForce: 15
   dashTime: 0.2

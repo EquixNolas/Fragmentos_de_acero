@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     SpriteRenderer spriteRenderer; //Renderizador del sprite
 
     //MOVIMIENTO
-    float move; //Variable para el movimiento
+    float horizontalMove; //Variable para el movimiento
     [Header("Movement")] //sección de movimiento
     [SerializeField]float speed = 5f; //variable para la velocidad
     bool lookDch = true; //Variable para mirar a la derecha
@@ -30,10 +30,21 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]float jumpForce = 10f; //Fuerza del salto
     [SerializeField] int totalExtraJumps = 2; //Saltos extra 
     [SerializeField]float fallMultiplier = 1.2f; //Multiplicador de gravedad para caer más rápido
+
+    //WALL SLIDE
+    bool isWallSliding; //Variable para saber si se está deslizándose por la pared
+    bool isWallJumping; //Variable para saber si se está saltando de la pared
+
+    //WALL JUMP
+    [Header("Wall Jump")] //sección de salto de la pared
+    [SerializeField]float wallJumpTime = 0.2f; //Tiempo del salto de la pared
+    [SerializeField]Vector2 wallJumpPower = new Vector2(1f, 10f); //Fuerza del salto de la pared
     [SerializeField] float wallSlideSpeed = 2f; //Velocidad de deslizamiento por la pared
     [SerializeField] Transform wallCheck; //Empty object que verifica si estas en la pared
     [SerializeField] LayerMask wallLayer; //Layer de la pared
-    bool isWallSliding; //Variable para saber si se está deslizándose por la pared
+    float wallJumpDirection; //Dirección del salto de la pared
+    float wallJumpTimer; //Contador del salto de la pared
+
     float normalGravityScale; //Gravedad normal del objeto
 
     //PROPULSION
@@ -70,15 +81,19 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isDashing)
+        Flip(); //Se llama a la función de giro
+        WallSlide(); //Se llama la función de deslizamiento por la pared
+        ProccessWallJump(); //Se llama a la función de salto de la pared
+        
+        if (!isWallJumping) { fall(); } //Se llama la función de caída
+
+        if (!isDashing && !isWallJumping)
         {
             Mover(); //Se llama la función de movimiento
             Propulsion(); //Se llama la función de propulsión
         }
 
-        WallSlide(); //Se llama la función de deslizamiento por la pared
-        fall(); //Se llama la función de caída
-
+        Debug.Log("Timer restante "+ wallJumpTimer);
     }
 
     bool IsGrounded() //Verifica si el Player está en el suelo
@@ -87,24 +102,9 @@ public class PlayerMovement : MonoBehaviour
         return hit.collider != null; //Si el rayo colisiona con algo, devuelve true
     }
 
-    bool IsWalled() //Verifica si el Player está en la pared
+    bool WallCheck() //Verifica si el Player está en la pared
     {
         return Physics2D.OverlapCircle(wallCheck.position, 0.1f, wallLayer); //Se lanza un círculo desde el objeto
-    }
-
-    private void WallSlide() //Se verifica si el Player está deslizándose por la pared
-    {
-        //Si el Player está en la pared y no está en el suelo y se está moviendo
-        if (IsWalled() && !IsGrounded() && move != 0f) 
-        {
-            isWallSliding = true;//Se activa la variable de deslizamiento por la pared
-            rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y , -wallSlideSpeed, float.MaxValue)); //Se limita la velocidad vertical del objeto
-        }
-
-        else
-        {
-            isWallSliding = false; //Se desactiva la variable de deslizamiento por la pared
-        }
     }
 
     //Dibuja el Gizmo de la verificación del suelo
@@ -118,8 +118,8 @@ public class PlayerMovement : MonoBehaviour
     // INPUTS  ACTIONS DE MOVIMIENTO
     public void Move(InputAction.CallbackContext context)
     {
-        move = context.ReadValue<Vector2>().x; //Se obtiene el valor del movimiento
-        animator.SetFloat("move", Mathf.Abs(move)); //Se asigna el valor del movimiento al animator
+        horizontalMove = context.ReadValue<Vector2>().x; //Se obtiene el valor del movimiento
+        animator.SetFloat("move", Mathf.Abs(horizontalMove)); //Se asigna el valor del movimiento al animator
 
         dashInput = context.ReadValue<Vector2>(); //Se obtiene el valor del dashInput
     }
@@ -141,10 +141,30 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Se verifica si se suelta el botón de salto
-        if (context.canceled)
+        else if (context.canceled)
         {
             isPropulsing = false; //Se desactiva la variable de propulsión
         }
+
+        if (context.performed && wallJumpTimer > 0f)
+        {
+            isWallJumping = true; //Se activa la variable de salto de la pared
+            rb.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); //Se aplica la fuerza del salto de la pared
+            wallJumpTimer = 0f; //Se reinicia el tiempo del salto de la pared
+
+            Debug.Log("Wall Jump"); //Se imprime en la consola el salto de la pared
+            //Forzar Flip
+            if (transform.localScale.x != wallJumpDirection)
+            {
+                lookDch = !lookDch; //Se cambia la dirección de la variable de giro
+                Vector3 escala = transform.localScale; //Se obtiene la escala del objeto
+                escala.x *= -1; //Se invierte la escala en el eje X
+                transform.localScale = escala; //Se asigna la nueva escala al objeto
+            }
+
+            Invoke(nameof(CancelWallJump), wallJumpTime + 0.1f); //Se invoca la función de detener el salto de la pared
+        }
+
     }
 
     //INPUT ACTION DE DASHEO
@@ -160,6 +180,16 @@ public class PlayerMovement : MonoBehaviour
                 direcion = lookDch ? Vector2.right : Vector2.left; //Se asigna la dirección del dash a la derecha o izquierda
             }
 
+            if(WallCheck() && !IsGrounded()) //Se verifica si el Player está en la pared y no está en el suelo
+            {
+                direcion = lookDch ? Vector2.left : Vector2.right; //Se asigna la dirección del dash a la derecha o izquierda
+                lookDch = !lookDch; //Se cambia la dirección de la variable de giro
+                Vector3 escala = transform.localScale; //Se obtiene la escala del objeto
+                escala.x *= -1; //Se invierte la escala en el eje X
+                transform.localScale = escala; //Se asigna la nueva escala al objeto
+            }
+
+
             StartCoroutine(DoDash(direcion.normalized)); //Se inicia la corrutina del dash
         }
     }
@@ -168,41 +198,21 @@ public class PlayerMovement : MonoBehaviour
     //MOVIMIENTO
     void Mover()
     {
-        rb.velocity = new Vector2(move * speed, rb.velocity.y); //Se asigna la velocidad del objeto
+        rb.velocity = new Vector2(horizontalMove * speed, rb.velocity.y); //Se asigna la velocidad del objeto
 
-        Girar(); //Se llama a la función de giro
     }
-
-    //Función para girar el Player
-    void Girar()
-    {
-        //Si el movimiento es menor a -0.1 y el Player está mirando a la derecha
-        if (move < -0.1 && lookDch)
-        {
-            Flip(); //Se llama a la función de giro
-        }
-
-        //Si el movimiento es mayor a 0.1 y el Player está mirando a la izquierda
-        if (move > 0.1 && !lookDch)
-        {
-            Flip(); //Se llama a la función de giro
-        }
-    }
-
+   
     //Función para girar el Player
     void Flip()
     {
-        lookDch = !lookDch; //Se cambia la dirección de la variable de giro
-        /*
-        if (lookDch == true)
-            spriteRenderer.flipX = false;
-        else
-            spriteRenderer.flipX = true;
-        */
-
-        Vector3 escala = transform.localScale; //Se obtiene la escala del objeto
-        escala.x *= -1; //Se invierte la escala en el eje X
-        transform.localScale = escala; //Se asigna la nueva escala al objeto
+        if (lookDch && horizontalMove < 0 || !lookDch && horizontalMove > 0) 
+        {
+            lookDch = !lookDch; //Se cambia la dirección de la variable de giro
+            Vector3 escala = transform.localScale; //Se obtiene la escala del objeto
+            escala.x *= -1; //Se invierte la escala en el eje X
+            transform.localScale = escala; //Se asigna la nueva escala al objeto
+        }
+       
     }
 
     //Función para hacer el salto
@@ -227,7 +237,7 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("fall", true); //Se activa la animación de caída
 
             float force = jumpForce; //Se asigna la fuerza del salto
-            if (Mathf.Abs(move) > 0.1f) force *= 0.7f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
+            if (Mathf.Abs(horizontalMove) > 0.1f) force *= 0.7f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
             rb.velocity = new Vector2(rb.velocity.x, 0f); // Reset vertical velocity
             rb.AddForce(Vector3.up * force/1.2f, ForceMode2D.Impulse);// Se aplica la fuerza del salto
 
@@ -237,6 +247,46 @@ public class PlayerMovement : MonoBehaviour
             availableJumps--; //Se reduce el número de saltos disponibles
         }
     }
+
+
+    private void WallSlide() //Se verifica si el Player está deslizándose por la pared
+    {
+        //Si el Player está en la pared y no está en el suelo y se está moviendo
+        if (WallCheck() && !IsGrounded() && horizontalMove != 0f)
+        {
+            isWallSliding = true;//Se activa la variable de deslizamiento por la pared
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -wallSlideSpeed)); //Se limita la velocidad vertical del objeto
+        }
+
+        else
+        {
+            isWallSliding = false; //Se desactiva la variable de deslizamiento por la pared
+        }
+
+    }
+
+    private void ProccessWallJump()
+    {
+        if (isWallSliding)
+        {
+            isWallJumping = false;
+            wallJumpDirection = -transform.localScale.x; //Se asigna la dirección del salto de la
+            wallJumpTimer = wallJumpTime; //Se asigna el tiempo del salto de la pared
+
+            CancelInvoke(nameof(CancelWallJump)); //Se cancela la invocación de la función de detener el salto de la pared 
+        }
+
+        else if (wallJumpTimer > 0f)
+        {
+            wallJumpTimer -= Time.deltaTime; //Se reduce el tiempo del salto de la pared
+        }
+    }
+
+    private void CancelWallJump()
+    {
+        isWallJumping = false; //Se desactiva la variable de salto de la pared
+    }
+
 
     //Función para hacer la caída
     void fall()
