@@ -26,6 +26,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]float jumpForce = 10f; //Fuerza del salto
     [SerializeField] int totalExtraJumps = 2; //Saltos extra 
     [SerializeField]float fallMultiplier = 1.2f; //Multiplicador de gravedad para caer más rápido
+    [SerializeField] Transform wallCheck; //Empty object que verifica si estas en la pared
+    [SerializeField] LayerMask wallLayer; //Layer de la pared
+
     public bool canDoubleJump = false; //Variable para el doble salto
     float normalGravityScale; //Gravedad normal del objeto
 
@@ -75,10 +78,17 @@ public class PlayerMovement : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, 0.1f, groundLayer);
         return hit.collider != null;
     }
+
+    bool isWalled()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(wallCheck.position, Vector2.right, 0.1f, groundLayer);
+        return hit.collider != null;
+    }
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * 0.1f);
+        Gizmos.DrawLine(wallCheck.position, wallCheck.position + Vector3.right * 0.1f);
     }
 
     //Inputs Actions
@@ -183,6 +193,8 @@ public class PlayerMovement : MonoBehaviour
             availableJumps--;
         }
     }
+
+
     void fall()
     {
 
