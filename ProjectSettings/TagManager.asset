@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - _Respawn
+  - Die
   layers:
   - Default
   - TransparentFX

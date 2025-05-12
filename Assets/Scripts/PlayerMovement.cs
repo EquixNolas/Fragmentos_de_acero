@@ -46,6 +46,7 @@ public class PlayerMovement : MonoBehaviour
     float wallJumpTimer; //Contador del salto de la pared
 
     float normalGravityScale; //Gravedad normal del objeto
+    Vector2 vecGravity; //Vector2 de gravedad
 
     //PROPULSION
     [Header("Propulsion")] //sección de propulsión
@@ -61,9 +62,11 @@ public class PlayerMovement : MonoBehaviour
 
     bool isDashing = false; //Variable para saber si se está haciendo dash
     bool canDash = true; //Variable para saber si se puede hacer dash
-
     Vector2 dashInput; // Variable para la dirección del dash
-    Vector2 vecGravity; //Vector2 de gravedad
+
+    //Respawn and Die
+    public Vector2 respawnPosition; //Posición de respawn
+    Vector3 PlayerlocalScale; //Escala del objeto
 
     // Start is called before the first frame update
     void Start()
@@ -74,7 +77,11 @@ public class PlayerMovement : MonoBehaviour
 
         vecGravity = new Vector2(0, -Physics2D.gravity.y); //Se obtine la gravedad del objeto
         normalGravityScale = rb.gravityScale;   //Se guarda la gravedad normal del objeto
+
         availableJumps = totalExtraJumps; //Se inicializan los saltos disponibles
+        
+        PlayerlocalScale = GetComponent<Transform>().localScale; //Se obtiene la escala del objeto
+        respawnPosition = transform.position; //Se obtiene la posición de respawn
 
     }
 
@@ -93,10 +100,9 @@ public class PlayerMovement : MonoBehaviour
             Propulsion(); //Se llama la función de propulsión
         }
 
-        Debug.Log("Direccion del jump "+ Mathf.Sign(wallJumpDirection));
-        Debug.Log("Movimiento " + Mathf.Sign(horizontalMove));
     }
 
+   
     bool IsGrounded() //Verifica si el Player está en el suelo
     {
         RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, 0.1f, groundLayer); //Se lanza un rayo hacia abajo desde el objeto
@@ -149,23 +155,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (context.performed && wallJumpTimer > 0f)
         {
-            isWallJumping = true; //Se activa la variable de salto de la pared
-
-            rb.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); //Se aplica la fuerza del salto de la pared
-
-            wallJumpTimer = 0f; //Se reinicia el tiempo del salto de la pared
-
-            Debug.Log("Wall Jump"); //Se imprime en la consola el salto de la pared
-            //Forzar Flip
-            if (transform.localScale.x != wallJumpDirection)
-            {
-                lookDch = !lookDch; //Se cambia la dirección de la variable de giro
-                Vector3 escala = transform.localScale; //Se obtiene la escala del objeto
-                escala.x *= -1; //Se invierte la escala en el eje X
-                transform.localScale = escala; //Se asigna la nueva escala al objeto
-            }
-
-            Invoke(nameof(CancelWallJump), wallJumpTime + 0.1f); //Se invoca la función de detener el salto de la pared
+            DoWallJump();
         }
 
     }
@@ -249,6 +239,26 @@ public class PlayerMovement : MonoBehaviour
 
             availableJumps--; //Se reduce el número de saltos disponibles
         }
+    }
+
+    void DoWallJump()
+    {
+        isWallJumping = true; //Se activa la variable de salto de la pared
+
+        rb.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); //Se aplica la fuerza del salto de la pared
+
+        wallJumpTimer = 0f; //Se reinicia el tiempo del salto de la pared
+
+        //Forzar Flip
+        if (transform.localScale.x != wallJumpDirection)
+        {
+            lookDch = !lookDch; //Se cambia la dirección de la variable de giro
+            Vector3 escala = transform.localScale; //Se obtiene la escala del objeto
+            escala.x *= -1; //Se invierte la escala en el eje X
+            transform.localScale = escala; //Se asigna la nueva escala al objeto
+        }
+
+        Invoke(nameof(CancelWallJump), wallJumpTime + 0.1f); //Se invoca la función de detener el salto de la pared
     }
 
 
@@ -345,7 +355,7 @@ public class PlayerMovement : MonoBehaviour
         rb.gravityScale = 0f; //Se desactiva la gravedad del objeto
         rb.velocity = direction * dashForce; //Se aplica la fuerza del dash
 
-        animator.SetTrigger("dash"); //Se activa la animación de dash
+        animator.SetBool("dash",true); //Se activa la animación de dash
 
         // Se activa el trail del dash u otro efecto visual
         while (elapsedTime < dashTime)
@@ -361,6 +371,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         rb.gravityScale = normalGravityScale; //Se asigna la gravedad normal al objeto
+        animator.SetBool("dash", false); //Se Desactiva la animación de dash
         dashTrail.emitting = false; // Se desactiva el trail del dash
         isDashing = false; //Se desactiva la variable de dash
 
@@ -388,4 +399,37 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.CompareTag("_Respawn"))
+        {
+            //Die(); //Se llama a la función de muerte
+        }
+
+        if(collision.gameObject.CompareTag("Die"))
+        {
+            Die(); //Se llama a la función de muerte
+        }
+    }
+
+    public void UdpateCheckpoint(Vector2 pos)
+    {
+        respawnPosition = pos; //Se asigna la posición de respawn al objeto
+    }
+
+    void Die()
+    {
+        StartCoroutine(Respawn(0.5f)); //Se inicia la corrutina de respawn
+    }
+
+    IEnumerator Respawn(float waitTime)
+    {
+        rb.velocity = Vector2.zero; //Se detiene el movimiento del objeto
+        rb.simulated = false; //Se desactiva la simulación del objeto
+        transform.localScale = new Vector3(0, 0, 0); //Se asigna la escala del objeto a cero
+        yield return new WaitForSeconds(waitTime); //Se espera un tiempo
+        rb.simulated = true; //Se activa la simulación del objeto
+        transform.position = respawnPosition; //Se asigna la posición de respawn al objeto
+        transform.localScale = PlayerlocalScale; //Se asigna la escala del objeto
+    }
 }
