@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
@@ -11,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     //CHECKING GROUND
     [Header("Ground Check")]//Titulo de la sección
     [SerializeField] TrailRenderer dashTrail; // Prefab del trail del dash
+    [SerializeField] GameObject dashEffect;
     [SerializeField] Transform groundCheck; //Empty object que verifica si estas en el suelo
     [SerializeField] LayerMask groundLayer; //Layer del Suelo
     //[SerializeField] GameObject dashGhostPrefab;
@@ -21,7 +23,7 @@ public class PlayerMovement : MonoBehaviour
     float horizontalMove; //Variable para el movimiento
     [Header("Movement")] //sección de movimiento
     [SerializeField]float speed = 5f; //variable para la velocidad
-    bool lookDch = true; //Variable para mirar a la derecha
+    [SerializeField] bool lookDch = true; //Variable para mirar a la derecha
 
     //SALTO
     int availableJumps; //saltos disponibles
@@ -34,15 +36,17 @@ public class PlayerMovement : MonoBehaviour
     //WALL SLIDE
     bool isWallSliding; //Variable para saber si se está deslizándose por la pared
     bool isWallJumping; //Variable para saber si se está saltando de la pared
+    [SerializeField] private float maxWallSlideTime = 0.5f; //Tiempo máximo de deslizamiento por la pared
+    private float wallSlideTimer = 0f; //Contador del tiempo de deslizamiento por la pared
 
     //WALL JUMP
     [Header("Wall Jump")] //sección de salto de la pared
     [SerializeField]float wallJumpTime = 0.2f; //Tiempo del salto de la pared
-    [SerializeField]Vector2 wallJumpPower = new Vector2(1f, 8f); //Fuerza del salto de la pared
+    [SerializeField]Vector2 wallJumpPower = new Vector2(5f, 8f); //Fuerza del salto de la pared
     [SerializeField] float wallSlideSpeed = 2f; //Velocidad de deslizamiento por la pared
     [SerializeField] Transform wallCheck; //Empty object que verifica si estas en la pared
     [SerializeField] LayerMask wallLayer; //Layer de la pared
-    float wallJumpDirection; //Dirección del salto de la pared
+    [SerializeField]float wallJumpDirection; //Dirección del salto de la pared
     float wallJumpTimer; //Contador del salto de la pared
 
     float normalGravityScale; //Gravedad normal del objeto
@@ -65,16 +69,18 @@ public class PlayerMovement : MonoBehaviour
     Vector2 dashInput; // Variable para la dirección del dash
 
     //Respawn and Die
+    [Header("Respawn")] //sección de respawn
+    [SerializeField] bool alive = true; //Variable para saber si el Player está vivo
     public Vector2 respawnPosition; //Posición de respawn
     Vector3 PlayerlocalScale; //Escala del objeto
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         animator = GetComponent<Animator>(); //Se obtiene el componente Animator
         rb = GetComponent<Rigidbody2D>(); //Se obtiene el componente Rigidbody2D
         spriteRenderer = GetComponent<SpriteRenderer>(); //Se obtiene el componente SpriteRenderer
-
+        dashEffect.SetActive(false); //Se desactiva el efecto del dash
         vecGravity = new Vector2(0, -Physics2D.gravity.y); //Se obtine la gravedad del objeto
         normalGravityScale = rb.gravityScale;   //Se guarda la gravedad normal del objeto
 
@@ -82,24 +88,27 @@ public class PlayerMovement : MonoBehaviour
         
         PlayerlocalScale = GetComponent<Transform>().localScale; //Se obtiene la escala del objeto
         respawnPosition = transform.position; //Se obtiene la posición de respawn
-
+        alive = true; //Se inicializa la variable de vida del Player
     }
 
     // Update is called once per frame
     void Update()
     {
-        Flip(); //Se llama a la función de giro
-        WallSlide(); //Se llama la función de deslizamiento por la pared
-        ProccessWallJump(); //Se llama a la función de salto de la pared
-        
-        if (!isWallJumping) { fall(); } //Se llama la función de caída
-
-        if (!isDashing && !isWallJumping)
+        if (alive)
         {
-            Mover(); //Se llama la función de movimiento
-            Propulsion(); //Se llama la función de propulsión
-        }
+            Flip(); //Se llama a la función de giro
+            WallSlide(); //Se llama la función de deslizamiento por la pared
+            ProccessWallJump(); //Se llama a la función de salto de la pared
+        
+            if (!isWallJumping) { fall(); } //Se llama la función de caída
 
+            if (!isDashing && !isWallJumping)
+            {
+                Mover(); //Se llama la función de movimiento
+                Propulsion(); //Se llama la función de propulsión
+            }
+            
+        }
     }
 
    
@@ -119,10 +128,12 @@ public class PlayerMovement : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * 0.1f);
+        Gizmos.DrawWireSphere(wallCheck.position, 0.1f); //Dibuja un círculo en la posición del wallCheck
     }
 
     //INPUTS ACTIONS
     // INPUTS  ACTIONS DE MOVIMIENTO
+
     public void Move(InputAction.CallbackContext context)
     {
         horizontalMove = context.ReadValue<Vector2>().x; //Se obtiene el valor del movimiento
@@ -191,6 +202,7 @@ public class PlayerMovement : MonoBehaviour
     //MOVIMIENTO
     void Mover()
     {
+        if(!isWallJumping)
         rb.velocity = new Vector2(horizontalMove * speed, rb.velocity.y); //Se asigna la velocidad del objeto
 
     }
@@ -205,7 +217,7 @@ public class PlayerMovement : MonoBehaviour
             escala.x *= -1; //Se invierte la escala en el eje X
             transform.localScale = escala; //Se asigna la nueva escala al objeto
         }
-       
+
     }
 
     //Función para hacer el salto
@@ -245,8 +257,11 @@ public class PlayerMovement : MonoBehaviour
     {
         isWallJumping = true; //Se activa la variable de salto de la pared
 
-        rb.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); //Se aplica la fuerza del salto de la pared
-
+        if(MathF.Sign(horizontalMove) != MathF.Sign(-wallJumpDirection))
+        {
+            rb.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); //Se aplica la fuerza del salto de la pared
+        }
+  
         wallJumpTimer = 0f; //Se reinicia el tiempo del salto de la pared
 
         //Forzar Flip
@@ -267,13 +282,25 @@ public class PlayerMovement : MonoBehaviour
         //Si el Player está en la pared y no está en el suelo y se está moviendo
         if (WallCheck() && !IsGrounded() && horizontalMove != 0f)
         {
-            isWallSliding = true;//Se activa la variable de deslizamiento por la pared
-            rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -wallSlideSpeed)); //Se limita la velocidad vertical del objeto
+            if(wallSlideTimer< maxWallSlideTime)
+            {
+                isWallSliding = true;//Se activa la variable de deslizamiento por la pared
+                wallSlideTimer += Time.deltaTime; //Se incrementa el contador del tiempo de deslizamiento por la pared
+                
+                rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -wallSlideSpeed)); //Se limita la velocidad vertical del objeto
+            }
+
+            else
+            {
+                isWallSliding = false; //Se desactiva la variable de deslizamiento por la pared
+            }
+
         }
 
         else
         {
             isWallSliding = false; //Se desactiva la variable de deslizamiento por la pared
+            wallSlideTimer = 0f; //Se reinicia el contador del tiempo de deslizamiento por la pared
         }
 
     }
@@ -365,14 +392,16 @@ public class PlayerMovement : MonoBehaviour
                 Instantiate(dashGhostPrefab, transform.position, Quaternion.identity);
             }
          */
-            dashTrail.emitting = true; // Se activa el trail del dash
+            //dashTrail.emitting = true; // Se activa el trail del dash
+            dashEffect.SetActive(true); // Se activa el efecto del dash
             elapsedTime += 0.05f; // Se incrementa el tiempo transcurrido
             yield return new WaitForSeconds(0.05f); //Se espera un tiempo
         }
 
         rb.gravityScale = normalGravityScale; //Se asigna la gravedad normal al objeto
         animator.SetBool("dash", false); //Se Desactiva la animación de dash
-        dashTrail.emitting = false; // Se desactiva el trail del dash
+        //dashTrail.emitting = false; // Se desactiva el trail del dash
+        dashEffect.SetActive(false); // Se desactiva el efecto del dash
         isDashing = false; //Se desactiva la variable de dash
 
         yield return new WaitForSeconds(dashCooldown); //Se espera un tiempo para CoolDown
@@ -408,6 +437,8 @@ public class PlayerMovement : MonoBehaviour
 
         if(collision.gameObject.CompareTag("Die"))
         {
+            alive = false; //Se desactiva la variable de vida del Player
+            animator.SetTrigger("death"); //Se activa la animación de muerte
             Die(); //Se llama a la función de muerte
         }
     }
@@ -426,10 +457,13 @@ public class PlayerMovement : MonoBehaviour
     {
         rb.velocity = Vector2.zero; //Se detiene el movimiento del objeto
         rb.simulated = false; //Se desactiva la simulación del objeto
+        yield return new WaitForSeconds(2f); //Se espera un tiempo
         transform.localScale = new Vector3(0, 0, 0); //Se asigna la escala del objeto a cero
-        yield return new WaitForSeconds(waitTime); //Se espera un tiempo
         rb.simulated = true; //Se activa la simulación del objeto
+        animator.Rebind(); //Se reinicia el animator
         transform.position = respawnPosition; //Se asigna la posición de respawn al objeto
         transform.localScale = PlayerlocalScale; //Se asigna la escala del objeto
+        lookDch = true; //Se reinicia la dirección de giro
+        alive = true; //Se activa la variable de vida del Player
     }
 }
