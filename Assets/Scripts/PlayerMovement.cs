@@ -88,7 +88,8 @@ public class PlayerMovement : MonoBehaviour
         
         PlayerlocalScale = GetComponent<Transform>().localScale; //Se obtiene la escala del objeto
         respawnPosition = transform.position; //Se obtiene la posición de respawn
-        alive = true; //Se inicializa la variable de vida del Player
+
+        alive = true; //Se activa la variable de vida
     }
 
     // Update is called once per frame
@@ -107,7 +108,7 @@ public class PlayerMovement : MonoBehaviour
                 Mover(); //Se llama la función de movimiento
                 Propulsion(); //Se llama la función de propulsión
             }
-            
+
         }
     }
 
@@ -437,8 +438,8 @@ public class PlayerMovement : MonoBehaviour
 
         if(collision.gameObject.CompareTag("Die"))
         {
-            alive = false; //Se desactiva la variable de vida del Player
             animator.SetTrigger("death"); //Se activa la animación de muerte
+            alive = false; //Se desactiva la variable de vida
             Die(); //Se llama a la función de muerte
         }
     }
@@ -456,14 +457,15 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator Respawn(float waitTime)
     {
         rb.velocity = Vector2.zero; //Se detiene el movimiento del objeto
-        rb.simulated = false; //Se desactiva la simulación del objeto
         yield return new WaitForSeconds(2f); //Se espera un tiempo
-        transform.localScale = new Vector3(0, 0, 0); //Se asigna la escala del objeto a cero
-        rb.simulated = true; //Se activa la simulación del objeto
+        rb.simulated = false; //Se desactiva la simulación del objeto
         animator.Rebind(); //Se reinicia el animator
+        transform.localScale = new Vector3(0, 0, 0); //Se asigna la escala del objeto a cero
+        yield return new WaitForSeconds(waitTime); //Se espera un tiempo
+        rb.simulated = true; //Se activa la simulación del objeto
         transform.position = respawnPosition; //Se asigna la posición de respawn al objeto
-        transform.localScale = PlayerlocalScale; //Se asigna la escala del objeto
         lookDch = true; //Se reinicia la dirección de giro
-        alive = true; //Se activa la variable de vida del Player
+        transform.localScale = PlayerlocalScale; //Se asigna la escala del objeto
+        alive = true; //Se activa la variable de vida
     }
 }
