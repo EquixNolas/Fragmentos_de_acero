@@ -435,13 +435,17 @@ public class PlayerMovement : MonoBehaviour
         {
             //Die(); //Se llama a la función de muerte
         }
+        if(collision.gameObject.layer == 9)
+        {
+            rb.velocity = Vector2.zero; //Se detiene el movimiento del objetoº
+            rb.simulated = false; //Se desactiva la simulación del objeto
+
+            Debug.Log("Checkpoint reached!"); //Se imprime un mensaje en la consola
+        }
 
         if(collision.gameObject.CompareTag("Die"))
         {   
            
-            animator.SetBool("saltar", false); //Se desactiva la animación de salto
-            animator.SetBool("fall", false); //Se desactiva la animación de salto
-            animator.SetBool("dash", false); //Se desactiva la animación de dash
             animator.SetTrigger("death"); //Se activa la animación de muerte
             alive = false; //Se desactiva la variable de vida
             Die(); //Se llama a la función de muerte
@@ -463,11 +467,12 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = Vector2.zero; //Se detiene el movimiento del objeto
         yield return new WaitForSeconds(2f); //Se espera un tiempo
         rb.simulated = false; //Se desactiva la simulación del objeto
-        animator.Rebind(); //Se reinicia el animator
         transform.localScale = new Vector3(0, 0, 0); //Se asigna la escala del objeto a cero
+        animator.Play("RobotIdle", 0, 0f); //Se reproduce la animación de idle del robot
+        animator.Update(0f); //Se actualiza el animator para que la animación se reproduzca correctamente
         yield return new WaitForSeconds(waitTime); //Se espera un tiempo
-        rb.simulated = true; //Se activa la simulación del objeto
         transform.position = respawnPosition; //Se asigna la posición de respawn al objeto
+        rb.simulated = true; //Se activa la simulación del objeto
         lookDch = true; //Se reinicia la dirección de giro
         transform.localScale = PlayerlocalScale; //Se asigna la escala del objeto
         alive = true; //Se activa la variable de vida

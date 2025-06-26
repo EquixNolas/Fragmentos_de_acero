@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5690162492675660503}
   - component: {fileID: 7455364358937245518}
   - component: {fileID: 4025734670964155255}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Triangle
   m_TagString: Die
   m_Icon: {fileID: 0}
@@ -26,13 +26,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 304333469825244732}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.267, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.36, y: 0.36, z: 1.2}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3525939031308324504}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
 --- !u!212 &7455364358937245518
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -140,7 +140,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3525939031308324504}
   - component: {fileID: 8399800958596719361}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Pinchos
   m_TagString: Die
   m_Icon: {fileID: 0}
