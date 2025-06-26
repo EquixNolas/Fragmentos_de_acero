@@ -437,7 +437,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if(collision.gameObject.CompareTag("Die"))
-        {
+        {   
+           
+            animator.SetBool("saltar", false); //Se desactiva la animación de salto
+            animator.SetBool("fall", false); //Se desactiva la animación de salto
+            animator.SetBool("dash", false); //Se desactiva la animación de dash
             animator.SetTrigger("death"); //Se activa la animación de muerte
             alive = false; //Se desactiva la variable de vida
             Die(); //Se llama a la función de muerte
