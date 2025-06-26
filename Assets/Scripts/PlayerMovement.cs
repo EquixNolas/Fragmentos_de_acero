@@ -286,6 +286,7 @@ public class PlayerMovement : MonoBehaviour
             if(wallSlideTimer< maxWallSlideTime)
             {
                 isWallSliding = true;//Se activa la variable de deslizamiento por la pared
+                animator.SetBool("sliding", true); //Se activa la animación de deslizamiento por la pared
                 wallSlideTimer += Time.deltaTime; //Se incrementa el contador del tiempo de deslizamiento por la pared
                 
                 rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -wallSlideSpeed)); //Se limita la velocidad vertical del objeto
@@ -294,12 +295,14 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 isWallSliding = false; //Se desactiva la variable de deslizamiento por la pared
+                animator.SetBool("sliding", false); //Se activa la animación de deslizamiento por la pared
             }
 
         }
 
         else
         {
+                animator.SetBool("sliding", false); //Se activa la animación de deslizamiento por la pared
             isWallSliding = false; //Se desactiva la variable de deslizamiento por la pared
             wallSlideTimer = 0f; //Se reinicia el contador del tiempo de deslizamiento por la pared
         }
