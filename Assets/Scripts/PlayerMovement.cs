@@ -36,7 +36,7 @@ public class PlayerMovement : MonoBehaviour
     public bool canDoubleJump = false; //Variable para el doble salto
     [SerializeField]float jumpForce = 10f; //Fuerza del salto
     [SerializeField] int totalExtraJumps = 2; //Saltos extra 
-    [SerializeField] float coyoteTime = 2f; //Tiempo de salto antes de caer
+    [SerializeField] float coyoteTime = 0.5f; //Tiempo de salto antes de caer
     [SerializeField] float coyoteCounter = 0; //Contador del tiempo de salto antes de caer
     [SerializeField]float fallMultiplier = 1.2f; //Multiplicador de gravedad para caer más rápido
 
@@ -229,6 +229,8 @@ public class PlayerMovement : MonoBehaviour
         if (IsGrounded())
         {
             coyoteCounter = coyoteTime; //Se reinicia el contador del tiempo de salto antes de caer
+            availableJumps = totalExtraJumps; //Se inicializan los saltos disponibles
+
         }
 
         else
@@ -240,33 +242,46 @@ public class PlayerMovement : MonoBehaviour
     //Función para hacer el salto
     void DoJump()
     {
+            float force = jumpForce; //Se asigna la fuerza del salto
+
         //Si el Player está en el suelo
         if (coyoteCounter > 0f)
         {
+            if(!IsGrounded() && Mathf.Abs(horizontalMove) > 0.1f)
+            {
+                force *= 0.80f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
+            }
+
             rb.velocity = new Vector2(rb.velocity.x, 0f); // Reset vertical velocity
-            rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse); // Se aplica la fuerza del salto
+            rb.AddForce(Vector3.up * force, ForceMode2D.Impulse); // Se aplica la fuerza del salto
 
             animator.SetBool("saltar", true); //Se activa la animación de salto
             animator.SetBool("fall", false); //Se desactiva la animación de caída
 
-            availableJumps = totalExtraJumps; //Se inicializan los saltos disponibles
+            // Si no estás en el suelo, significa que saltas desde coyote
+            if (!IsGrounded())
+            {
+                availableJumps--; // ← Gasta un salto extra si es un salto desde coyote
+            }
+
             coyoteCounter = 0f; //Se reinicia el contador del tiempo de salto antes de caer
+            Debug.Log("Salto Normal"); //Se imprime un mensaje en la consola
         }
 
         //Si el Player tiene saltos disponibles y puede hacer doble salto
         else if (availableJumps > 0 && canDoubleJump)
         {
             animator.SetBool("fall", true); //Se activa la animación de caída
+     
+            if (Mathf.Abs(horizontalMove) > 0.1f) force *= 0.80f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
 
-            float force = jumpForce; //Se asigna la fuerza del salto
-            if (Mathf.Abs(horizontalMove) > 0.1f) force *= 0.7f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
             rb.velocity = new Vector2(rb.velocity.x, 0f); // Reset vertical velocity
             rb.AddForce(Vector3.up * force/1.2f, ForceMode2D.Impulse);// Se aplica la fuerza del salto
-
 
             animator.SetBool("saltar", true); //Se activa la animación de salto
 
             availableJumps--; //Se reduce el número de saltos disponibles
+            Debug.Log("Doble Salto");
         }
     }
 
