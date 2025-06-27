@@ -27,18 +27,18 @@ public class PlayerMovement : MonoBehaviour
     //MOVIMIENTO
     float horizontalMove; //Variable para el movimiento
     [Header("Movement")] //sección de movimiento
-    [SerializeField] float speed = 5f; //variable para la velocidad
+    [SerializeField] float speed = 6f; //variable para la velocidad
     [SerializeField] bool lookDch = true; //Variable para mirar a la derecha
 
     //SALTO
-    int availableJumps; //saltos disponibles
     [Header("Jump")] //sección de salto
     public bool canDoubleJump = false; //Variable para el doble salto
-    [SerializeField]float jumpForce = 10f; //Fuerza del salto
-    [SerializeField] int totalExtraJumps = 2; //Saltos extra 
+    [SerializeField] float jumpForce = 10f; //Fuerza del salto
+    [SerializeField] int totalExtraJumps = 1; //Saltos extra 
+    [SerializeField] int availableJumps; //saltos disponibles
     [SerializeField] float coyoteTime = 0.5f; //Tiempo de salto antes de caer
     [SerializeField] float coyoteCounter = 0; //Contador del tiempo de salto antes de caer
-    [SerializeField]float fallMultiplier = 1.2f; //Multiplicador de gravedad para caer más rápido
+    [SerializeField] float fallMultiplier = 1.2f; //Multiplicador de gravedad para caer más rápido
 
     //WALL JUMP
     [Header("Wall Jump")] //sección de salto de la pared
@@ -247,9 +247,17 @@ public class PlayerMovement : MonoBehaviour
         //Si el Player está en el suelo
         if (coyoteCounter > 0f)
         {
-            if(!IsGrounded() && Mathf.Abs(horizontalMove) > 0.1f)
+            if(!IsGrounded())
             {
-                force *= 0.80f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
+                if(Mathf.Abs(horizontalMove) > 0.1f)
+                {
+                    force *= 0.80f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
+                }
+
+                if(availableJumps > 0)
+                {
+                    availableJumps--; // ← Gasta un salto extra si es un salto desde coyote
+                }
             }
 
             rb.velocity = new Vector2(rb.velocity.x, 0f); // Reset vertical velocity
@@ -257,12 +265,6 @@ public class PlayerMovement : MonoBehaviour
 
             animator.SetBool("saltar", true); //Se activa la animación de salto
             animator.SetBool("fall", false); //Se desactiva la animación de caída
-
-            // Si no estás en el suelo, significa que saltas desde coyote
-            if (!IsGrounded())
-            {
-                availableJumps--; // ← Gasta un salto extra si es un salto desde coyote
-            }
 
             coyoteCounter = 0f; //Se reinicia el contador del tiempo de salto antes de caer
             Debug.Log("Salto Normal"); //Se imprime un mensaje en la consola
@@ -272,8 +274,11 @@ public class PlayerMovement : MonoBehaviour
         else if (availableJumps > 0 && canDoubleJump)
         {
             animator.SetBool("fall", true); //Se activa la animación de caída
-     
-            if (Mathf.Abs(horizontalMove) > 0.1f) force *= 0.80f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
+
+            if (Mathf.Abs(horizontalMove) > 0.1f)
+            {
+                force *= 0.80f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
+            }
 
             rb.velocity = new Vector2(rb.velocity.x, 0f); // Reset vertical velocity
             rb.AddForce(Vector3.up * force/1.2f, ForceMode2D.Impulse);// Se aplica la fuerza del salto
