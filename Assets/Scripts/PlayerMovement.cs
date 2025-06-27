@@ -34,11 +34,11 @@ public class PlayerMovement : MonoBehaviour
     int availableJumps; //saltos disponibles
     [Header("Jump")] //sección de salto
     public bool canDoubleJump = false; //Variable para el doble salto
-    [SerializeField] float jumpForce = 10f; //Fuerza del salto
+    [SerializeField]float jumpForce = 10f; //Fuerza del salto
     [SerializeField] int totalExtraJumps = 2; //Saltos extra 
     [SerializeField] float coyoteTime = 2f; //Tiempo de salto antes de caer
     [SerializeField] float coyoteCounter = 0; //Contador del tiempo de salto antes de caer
-    [SerializeField] float fallMultiplier = 1.2f; //Multiplicador de gravedad para caer más rápido
+    [SerializeField]float fallMultiplier = 1.2f; //Multiplicador de gravedad para caer más rápido
 
     //WALL JUMP
     [Header("Wall Jump")] //sección de salto de la pared
@@ -249,7 +249,6 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("saltar", true); //Se activa la animación de salto
             animator.SetBool("fall", false); //Se desactiva la animación de caída
 
-
             availableJumps = totalExtraJumps; //Se inicializan los saltos disponibles
             coyoteCounter = 0f; //Se reinicia el contador del tiempo de salto antes de caer
         }
@@ -257,6 +256,8 @@ public class PlayerMovement : MonoBehaviour
         //Si el Player tiene saltos disponibles y puede hacer doble salto
         else if (availableJumps > 0 && canDoubleJump)
         {
+            animator.SetBool("fall", true); //Se activa la animación de caída
+
             float force = jumpForce; //Se asigna la fuerza del salto
             if (Mathf.Abs(horizontalMove) > 0.1f) force *= 0.7f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
             rb.velocity = new Vector2(rb.velocity.x, 0f); // Reset vertical velocity
@@ -317,7 +318,7 @@ public class PlayerMovement : MonoBehaviour
 
         else
         {
-            animator.SetBool("sliding", false); //Se activa la animación de deslizamiento por la pared
+                animator.SetBool("sliding", false); //Se activa la animación de deslizamiento por la pared
             isWallSliding = false; //Se desactiva la variable de deslizamiento por la pared
             wallSlideTimer = 0f; //Se reinicia el contador del tiempo de deslizamiento por la pared
         }
@@ -350,9 +351,10 @@ public class PlayerMovement : MonoBehaviour
     //Función para hacer la caída
     void fall()
     {
-        //Si el Player está en el suelo y está cayendo
+        //Si el Player no está en el suelo y está cayendo
         if (!IsGrounded () && rb.velocity.y < -0.1f  /* && !isPropulsing*/)
         {
+            animator.SetBool("saltar", false); //Se desactiva la animación de salto
             animator.SetBool("fall", true);//Se activa la animación de caída
             rb.velocity -= vecGravity * fallMultiplier * Time.deltaTime; //Se aplica la gravedad al objeto
 
@@ -361,7 +363,6 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             animator.SetBool("fall", false);//Se desactiva la animación de caída
-
         }
     }
 
@@ -429,7 +430,19 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    void UpdateAnimations()
+    {
+        if (IsGrounded())
+        {
+            animator.SetBool("saltar", false);//Se desactiva la animación de salto
+            animator.SetBool("fall", false);//Se desactiva la animación de caída
 
+            isPropulsing = false;//Se desactiva la variable de propulsión
+
+            //availableJumps = totalExtraJumps;
+            canDash = true; //Se activa la variable de poder dashear
+        }
+    }
     //COLLISIONES
     /*
     private void OnCollisionEnter2D(Collision2D collision)
@@ -446,8 +459,8 @@ public class PlayerMovement : MonoBehaviour
             canDash = true; //Se activa la variable de poder dashear
         }
 
-    }*/
-
+    }
+    */
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.CompareTag("_Respawn"))
@@ -455,7 +468,7 @@ public class PlayerMovement : MonoBehaviour
             //Die(); //Se llama a la función de muerte
         }
 
-        if(collision.gameObject.layer == 9)
+        if(collision.gameObject.layer == LayerMask.NameToLayer("Reset Zone"))
         {
             rb.velocity = Vector2.zero; //Se detiene el movimiento del objetoº
             rb.simulated = false; //Se desactiva la simulación del objeto
