@@ -9,6 +9,11 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody2D rb;
     Animator animator;
 
+    //Respawn and Die
+    [Header("Respawn")] //sección de respawn
+    [SerializeField] bool alive = true; //Variable para saber si el Player está vivo
+    public Vector2 respawnPosition; //Posición de respawn
+
     //CHECKING GROUND
     [Header("Ground Check")]//Titulo de la sección
     [SerializeField] TrailRenderer dashTrail; // Prefab del trail del dash
@@ -22,22 +27,18 @@ public class PlayerMovement : MonoBehaviour
     //MOVIMIENTO
     float horizontalMove; //Variable para el movimiento
     [Header("Movement")] //sección de movimiento
-    [SerializeField]float speed = 5f; //variable para la velocidad
+    [SerializeField] float speed = 5f; //variable para la velocidad
     [SerializeField] bool lookDch = true; //Variable para mirar a la derecha
 
     //SALTO
     int availableJumps; //saltos disponibles
     [Header("Jump")] //sección de salto
     public bool canDoubleJump = false; //Variable para el doble salto
-    [SerializeField]float jumpForce = 10f; //Fuerza del salto
+    [SerializeField] float jumpForce = 10f; //Fuerza del salto
     [SerializeField] int totalExtraJumps = 2; //Saltos extra 
-    [SerializeField]float fallMultiplier = 1.2f; //Multiplicador de gravedad para caer más rápido
-
-    //WALL SLIDE
-    bool isWallSliding; //Variable para saber si se está deslizándose por la pared
-    bool isWallJumping; //Variable para saber si se está saltando de la pared
-    [SerializeField] private float maxWallSlideTime = 0.5f; //Tiempo máximo de deslizamiento por la pared
-    private float wallSlideTimer = 0f; //Contador del tiempo de deslizamiento por la pared
+    [SerializeField] float coyoteTime = 2f; //Tiempo de salto antes de caer
+    [SerializeField] float coyoteCounter = 0; //Contador del tiempo de salto antes de caer
+    [SerializeField] float fallMultiplier = 1.2f; //Multiplicador de gravedad para caer más rápido
 
     //WALL JUMP
     [Header("Wall Jump")] //sección de salto de la pared
@@ -48,6 +49,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] LayerMask wallLayer; //Layer de la pared
     [SerializeField]float wallJumpDirection; //Dirección del salto de la pared
     float wallJumpTimer; //Contador del salto de la pared
+    
+    //WALL SLIDE
+    bool isWallSliding; //Variable para saber si se está deslizándose por la pared
+    bool isWallJumping; //Variable para saber si se está saltando de la pared
+    [SerializeField] private float maxWallSlideTime = 0.5f; //Tiempo máximo de deslizamiento por la pared
+    private float wallSlideTimer = 0f; //Contador del tiempo de deslizamiento por la pared
+
 
     float normalGravityScale; //Gravedad normal del objeto
     Vector2 vecGravity; //Vector2 de gravedad
@@ -68,10 +76,7 @@ public class PlayerMovement : MonoBehaviour
     bool canDash = true; //Variable para saber si se puede hacer dash
     Vector2 dashInput; // Variable para la dirección del dash
 
-    //Respawn and Die
-    [Header("Respawn")] //sección de respawn
-    [SerializeField] bool alive = true; //Variable para saber si el Player está vivo
-    public Vector2 respawnPosition; //Posición de respawn
+    
     Vector3 PlayerlocalScale; //Escala del objeto
 
     // Start is called before the first frame update
@@ -95,6 +100,8 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CoyoteTimeControl(); //Se llama a la función de control del tiempo de salto antes de caer
+
         if (alive)
         {
             Flip(); //Se llama a la función de giro
@@ -112,7 +119,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-   
     bool IsGrounded() //Verifica si el Player está en el suelo
     {
         RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, 0.1f, groundLayer); //Se lanza un rayo hacia abajo desde el objeto
@@ -203,9 +209,7 @@ public class PlayerMovement : MonoBehaviour
     //MOVIMIENTO
     void Mover()
     {
-        if(!isWallJumping)
         rb.velocity = new Vector2(horizontalMove * speed, rb.velocity.y); //Se asigna la velocidad del objeto
-
     }
    
     //Función para girar el Player
@@ -220,12 +224,24 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
+    void CoyoteTimeControl()
+    {
+        if (IsGrounded())
+        {
+            coyoteCounter = coyoteTime; //Se reinicia el contador del tiempo de salto antes de caer
+        }
+
+        else
+        {
+            coyoteCounter -= Time.deltaTime; //Se reduce el contador del tiempo de salto antes de caer
+        }
+    }
 
     //Función para hacer el salto
     void DoJump()
     {
         //Si el Player está en el suelo
-        if (IsGrounded())
+        if (coyoteCounter > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, 0f); // Reset vertical velocity
             rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse); // Se aplica la fuerza del salto
@@ -235,13 +251,12 @@ public class PlayerMovement : MonoBehaviour
 
 
             availableJumps = totalExtraJumps; //Se inicializan los saltos disponibles
+            coyoteCounter = 0f; //Se reinicia el contador del tiempo de salto antes de caer
         }
 
         //Si el Player tiene saltos disponibles y puede hacer doble salto
         else if (availableJumps > 0 && canDoubleJump)
         {
-            animator.SetBool("fall", true); //Se activa la animación de caída
-
             float force = jumpForce; //Se asigna la fuerza del salto
             if (Mathf.Abs(horizontalMove) > 0.1f) force *= 0.7f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
             rb.velocity = new Vector2(rb.velocity.x, 0f); // Reset vertical velocity
@@ -302,7 +317,7 @@ public class PlayerMovement : MonoBehaviour
 
         else
         {
-                animator.SetBool("sliding", false); //Se activa la animación de deslizamiento por la pared
+            animator.SetBool("sliding", false); //Se activa la animación de deslizamiento por la pared
             isWallSliding = false; //Se desactiva la variable de deslizamiento por la pared
             wallSlideTimer = 0f; //Se reinicia el contador del tiempo de deslizamiento por la pared
         }
@@ -416,6 +431,7 @@ public class PlayerMovement : MonoBehaviour
 
 
     //COLLISIONES
+    /*
     private void OnCollisionEnter2D(Collision2D collision)
     {
         //Si el Player colisiona con el suelo
@@ -430,7 +446,7 @@ public class PlayerMovement : MonoBehaviour
             canDash = true; //Se activa la variable de poder dashear
         }
 
-    }
+    }*/
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -438,12 +454,13 @@ public class PlayerMovement : MonoBehaviour
         {
             //Die(); //Se llama a la función de muerte
         }
+
         if(collision.gameObject.layer == 9)
         {
             rb.velocity = Vector2.zero; //Se detiene el movimiento del objetoº
             rb.simulated = false; //Se desactiva la simulación del objeto
 
-            Debug.Log("Checkpoint reached!"); //Se imprime un mensaje en la consola
+            Debug.Log("Estas Muerto!"); //Se imprime un mensaje en la consola
         }
 
         if(collision.gameObject.CompareTag("Die"))
@@ -471,13 +488,14 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(2f); //Se espera un tiempo
         rb.simulated = false; //Se desactiva la simulación del objeto
         transform.localScale = new Vector3(0, 0, 0); //Se asigna la escala del objeto a cero
+        yield return new WaitForSeconds(waitTime); //Se espera un tiempo
+        rb.simulated = true; //Se activa la simulación del objeto
+        transform.position = respawnPosition; //Se asigna la posición de respawn al objeto
+        lookDch = true; //Se reinicia la dirección de giro
         animator.Play("RobotIdle", 0, 0f); //Se reproduce la animación de idle del robot
         animator.Update(0f); //Se actualiza el animator para que la animación se reproduzca correctamente
-        yield return new WaitForSeconds(waitTime); //Se espera un tiempo
-        transform.position = respawnPosition; //Se asigna la posición de respawn al objeto
-        rb.simulated = true; //Se activa la simulación del objeto
-        lookDch = true; //Se reinicia la dirección de giro
         transform.localScale = PlayerlocalScale; //Se asigna la escala del objeto
+        yield return new WaitForSeconds(0.3f); //Se espera un tiempo
         alive = true; //Se activa la variable de vida
     }
 }

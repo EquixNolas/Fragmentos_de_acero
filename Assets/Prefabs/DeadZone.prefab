@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2021633720974430361}
   - component: {fileID: 1649590650767130114}
   - component: {fileID: 1544434898087563383}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: DeadZone
   m_TagString: Die
   m_Icon: {fileID: 0}
@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 30.24, y: -2.8177, z: 0.01681562}
-  m_LocalScale: {x: 7.463106, y: 1.8699313, z: 1}
+  m_LocalScale: {x: 27.192156, y: 1.8699313, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
