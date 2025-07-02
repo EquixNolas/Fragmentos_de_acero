@@ -34,9 +34,9 @@ public class PlayerMovement : MonoBehaviour
     [Header("Jump")] //sección de salto
     public bool canDoubleJump = false; //Variable para el doble salto
     [SerializeField] float jumpForce = 10f; //Fuerza del salto
-    [SerializeField] int totalExtraJumps = 1; //Saltos extra 
+    [SerializeField] int totalJumps = 2; //Saltos extra 
     [SerializeField] int availableJumps; //saltos disponibles
-    [SerializeField] float coyoteTime = 0.5f; //Tiempo de salto antes de caer
+    [SerializeField] float coyoteTime = 0.2f; //Tiempo de salto antes de caer
     [SerializeField] float coyoteCounter = 0; //Contador del tiempo de salto antes de caer
     [SerializeField] float fallMultiplier = 1.2f; //Multiplicador de gravedad para caer más rápido
 
@@ -89,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
         vecGravity = new Vector2(0, -Physics2D.gravity.y); //Se obtine la gravedad del objeto
         normalGravityScale = rb.gravityScale;   //Se guarda la gravedad normal del objeto
 
-        availableJumps = totalExtraJumps; //Se inicializan los saltos disponibles
+        availableJumps = totalJumps; //Se inicializan los saltos disponibles
         
         PlayerlocalScale = GetComponent<Transform>().localScale; //Se obtiene la escala del objeto
         respawnPosition = transform.position; //Se obtiene la posición de respawn
@@ -117,6 +117,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
         }
+        Debug.Log("Dirección es" + Mathf.Sign(horizontalMove));
     }
 
     bool IsGrounded() //Verifica si el Player está en el suelo
@@ -157,6 +158,8 @@ public class PlayerMovement : MonoBehaviour
         if (context.started && !isWallJumping)  
         {
             DoJump(); //Se llama a la función de salto
+            availableJumps--; //Se reduce el número de saltos disponibles
+
         }
 
         //Se verifica si se mantiene el botón de salto
@@ -229,8 +232,11 @@ public class PlayerMovement : MonoBehaviour
         if (IsGrounded())
         {
             coyoteCounter = coyoteTime; //Se reinicia el contador del tiempo de salto antes de caer
-            availableJumps = totalExtraJumps; //Se inicializan los saltos disponibles
 
+            if(availableJumps <= 0)
+            {
+                availableJumps = totalJumps; //Se reinicia el número de saltos disponibles
+            }
         }
 
         else
@@ -242,22 +248,14 @@ public class PlayerMovement : MonoBehaviour
     //Función para hacer el salto
     void DoJump()
     {
-            float force = jumpForce; //Se asigna la fuerza del salto
+        float force = jumpForce; //Se asigna la fuerza del salto
 
         //Si el Player está en el suelo
-        if (coyoteCounter > 0f)
+        if (coyoteCounter > 0f || availableJumps > 0)
         {
-            if(!IsGrounded())
+            if(Mathf.Abs(horizontalMove) > 0.1f)
             {
-                if(Mathf.Abs(horizontalMove) > 0.1f)
-                {
-                    force *= 0.80f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
-                }
-
-                if(availableJumps > 0)
-                {
-                    availableJumps--; // ← Gasta un salto extra si es un salto desde coyote
-                }
+               force *= 0.80f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
             }
 
             rb.velocity = new Vector2(rb.velocity.x, 0f); // Reset vertical velocity
@@ -269,7 +267,7 @@ public class PlayerMovement : MonoBehaviour
             coyoteCounter = 0f; //Se reinicia el contador del tiempo de salto antes de caer
             Debug.Log("Salto Normal"); //Se imprime un mensaje en la consola
         }
-
+        /*
         //Si el Player tiene saltos disponibles y puede hacer doble salto
         else if (availableJumps > 0 && canDoubleJump)
         {
@@ -287,7 +285,7 @@ public class PlayerMovement : MonoBehaviour
 
             availableJumps--; //Se reduce el número de saltos disponibles
             Debug.Log("Doble Salto");
-        }
+        }*/
     }
 
     void DoWallJump()
@@ -297,8 +295,10 @@ public class PlayerMovement : MonoBehaviour
         if(MathF.Sign(horizontalMove) != MathF.Sign(-wallJumpDirection))
         {
             rb.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); //Se aplica la fuerza del salto de la pared
+            animator.SetBool("saltar", true); //Se activa la animación de salto
         }
   
+        
         wallJumpTimer = 0f; //Se reinicia el tiempo del salto de la pared
 
         //Forzar Flip
@@ -322,6 +322,7 @@ public class PlayerMovement : MonoBehaviour
             if(wallSlideTimer< maxWallSlideTime)
             {
                 isWallSliding = true;//Se activa la variable de deslizamiento por la pared
+                animator.SetBool("saltar", false); //Se desactiva la animación de salto
                 animator.SetBool("sliding", true); //Se activa la animación de deslizamiento por la pared
                 wallSlideTimer += Time.deltaTime; //Se incrementa el contador del tiempo de deslizamiento por la pared
                 
@@ -384,6 +385,8 @@ public class PlayerMovement : MonoBehaviour
         {
             animator.SetBool("fall", false);//Se desactiva la animación de caída
         }
+
+       
     }
 
     //Función para hacer la propulsión
