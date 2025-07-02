@@ -94,6 +94,7 @@ public class PlayerMovement : MonoBehaviour
         PlayerlocalScale = GetComponent<Transform>().localScale; //Se obtiene la escala del objeto
         respawnPosition = transform.position; //Se obtiene la posición de respawn
 
+        lookDch = true; //Se inicializa la dirección de giro a la derecha
         alive = true; //Se activa la variable de vida
     }
 
@@ -117,7 +118,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
         }
-        Debug.Log("Dirección es" + Mathf.Sign(horizontalMove));
+        Debug.Log("is wallJumpping es " + isWallJumping);
     }
 
     bool IsGrounded() //Verifica si el Player está en el suelo
@@ -157,9 +158,14 @@ public class PlayerMovement : MonoBehaviour
         //Se verifica si se presiona el botón de salto
         if (context.started && !isWallJumping)  
         {
+            animator.SetBool("saltar", true); //Se activa la animación de salto
             DoJump(); //Se llama a la función de salto
             availableJumps--; //Se reduce el número de saltos disponibles
-
+        }
+        if(context.started && wallJumpTimer > 0f)
+        {
+            animator.SetBool("saltar", true); //Se activa la animación de salto
+            DoWallJump(); //Se llama a la función de salto de la pared si el timer es mayor a 0
         }
 
         //Se verifica si se mantiene el botón de salto
@@ -173,12 +179,6 @@ public class PlayerMovement : MonoBehaviour
         {
             isPropulsing = false; //Se desactiva la variable de propulsión
         }
-
-        if (context.performed && wallJumpTimer > 0f)
-        {
-            DoWallJump();
-        }
-
     }
 
     //INPUT ACTION DE DASHEO
@@ -229,7 +229,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void CoyoteTimeControl()
     {
-        if (IsGrounded())
+        if (IsGrounded() || WallCheck())
         {
             coyoteCounter = coyoteTime; //Se reinicia el contador del tiempo de salto antes de caer
 
@@ -267,47 +267,28 @@ public class PlayerMovement : MonoBehaviour
             coyoteCounter = 0f; //Se reinicia el contador del tiempo de salto antes de caer
             Debug.Log("Salto Normal"); //Se imprime un mensaje en la consola
         }
-        /*
-        //Si el Player tiene saltos disponibles y puede hacer doble salto
-        else if (availableJumps > 0 && canDoubleJump)
-        {
-            animator.SetBool("fall", true); //Se activa la animación de caída
-
-            if (Mathf.Abs(horizontalMove) > 0.1f)
-            {
-                force *= 0.80f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
-            }
-
-            rb.velocity = new Vector2(rb.velocity.x, 0f); // Reset vertical velocity
-            rb.AddForce(Vector3.up * force/1.2f, ForceMode2D.Impulse);// Se aplica la fuerza del salto
-
-            animator.SetBool("saltar", true); //Se activa la animación de salto
-
-            availableJumps--; //Se reduce el número de saltos disponibles
-            Debug.Log("Doble Salto");
-        }*/
     }
 
     void DoWallJump()
     {
+        if(isWallJumping) return; //Si ya se está saltando de la pared, no se hace nada
+
+        float jumpDir = -wallJumpDirection; //Se asigna la dirección del salto de la pared
+
+        animator.SetBool("saltar", true); //Se activa la animación de salto
         isWallJumping = true; //Se activa la variable de salto de la pared
 
-        if(MathF.Sign(horizontalMove) != MathF.Sign(-wallJumpDirection))
-        {
-            rb.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); //Se aplica la fuerza del salto de la pared
-            animator.SetBool("saltar", true); //Se activa la animación de salto
-        }
-  
+        rb.velocity = new Vector2(jumpDir * wallJumpPower.x, wallJumpPower.y); //Se aplica la fuerza del salto de la pared
         
-        wallJumpTimer = 0f; //Se reinicia el tiempo del salto de la pared
 
-        //Forzar Flip
-        if (transform.localScale.x != wallJumpDirection)
+        wallJumpTimer = 0f; //Se reinicia el contador del tiempo de salto de la pared
+
+        if (Mathf.Sign(transform.localScale.x) != Mathf.Sign(jumpDir))
         {
-            lookDch = !lookDch; //Se cambia la dirección de la variable de giro
-            Vector3 escala = transform.localScale; //Se obtiene la escala del objeto
-            escala.x *= -1; //Se invierte la escala en el eje X
-            transform.localScale = escala; //Se asigna la nueva escala al objeto
+            lookDch = !lookDch;
+            Vector3 escala = transform.localScale;
+            escala.x *= -1;
+            transform.localScale = escala;
         }
 
         Invoke(nameof(CancelWallJump), wallJumpTime + 0.1f); //Se invoca la función de detener el salto de la pared
@@ -339,7 +320,7 @@ public class PlayerMovement : MonoBehaviour
 
         else
         {
-                animator.SetBool("sliding", false); //Se activa la animación de deslizamiento por la pared
+            animator.SetBool("sliding", false); //Se activa la animación de deslizamiento por la pared
             isWallSliding = false; //Se desactiva la variable de deslizamiento por la pared
             wallSlideTimer = 0f; //Se reinicia el contador del tiempo de deslizamiento por la pared
         }
@@ -350,11 +331,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isWallSliding)
         {
-            isWallJumping = false;
-            wallJumpDirection = -transform.localScale.x; //Se asigna la dirección del salto de la pared
+            //isWallJumping = false;
+            wallJumpDirection = transform.localScale.x; //Se asigna la dirección del salto de la pared
             wallJumpTimer = wallJumpTime; //Se asigna el tiempo del salto de la pared
 
-            CancelInvoke(nameof(CancelWallJump)); //Se cancela la invocación de la función de detener el salto de la pared 
+            //CancelInvoke(nameof(CancelWallJump)); //Se cancela la invocación de la función de detener el salto de la pared 
         }
 
         else if (wallJumpTimer > 0f)
