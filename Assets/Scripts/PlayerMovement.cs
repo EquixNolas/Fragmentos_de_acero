@@ -220,28 +220,34 @@ public class PlayerMovement : MonoBehaviour
     //INPUT ACTION DE DASHEO
     public void Dash(InputAction.CallbackContext context)
     {
-        //Se verifica si se presiona el botón de dash y si se puede hacer dash
-        if (context.started && canDash)
+        if (alive)
         {
-            Vector2 direcion = dashInput; //Se obtiene la dirección del dash
-            //Se verifica si la dirección del dash es cero
-            if (direcion == Vector2.zero)
+            //Se verifica si se presiona el botón de dash y si se puede hacer dash
+            if (context.started && canDash)
             {
-                direcion = lookDch ? Vector2.right : Vector2.left; //Se asigna la dirección del dash a la derecha o izquierda
+                Vector2 direcion = dashInput; //Se obtiene la dirección del dash
+                //Se verifica si la dirección del dash es cero
+                if (direcion == Vector2.zero)
+                {
+                    direcion = lookDch ? Vector2.right : Vector2.left; //Se asigna la dirección del dash a la derecha o izquierda
+                }
+
+                if(WallCheck() && !IsGrounded()) //Se verifica si el Player está en la pared y no está en el suelo
+                {
+                    direcion = lookDch ? Vector2.left : Vector2.right; //Se asigna la dirección del dash a la derecha o izquierda
+                    lookDch = !lookDch; //Se cambia la dirección de la variable de giro
+                    Vector3 escala = transform.localScale; //Se obtiene la escala del objeto
+                    escala.x *= -1; //Se invierte la escala en el eje X
+                    transform.localScale = escala; //Se asigna la nueva escala al objeto
+                }
+
+
+                StartCoroutine(DoDash(direcion.normalized)); //Se inicia la corrutina del dash
             }
 
-            if(WallCheck() && !IsGrounded()) //Se verifica si el Player está en la pared y no está en el suelo
-            {
-                direcion = lookDch ? Vector2.left : Vector2.right; //Se asigna la dirección del dash a la derecha o izquierda
-                lookDch = !lookDch; //Se cambia la dirección de la variable de giro
-                Vector3 escala = transform.localScale; //Se obtiene la escala del objeto
-                escala.x *= -1; //Se invierte la escala en el eje X
-                transform.localScale = escala; //Se asigna la nueva escala al objeto
-            }
-
-
-            StartCoroutine(DoDash(direcion.normalized)); //Se inicia la corrutina del dash
         }
+      
+       
     }
 
     //ACCIONES DE PERSONAJE
@@ -492,16 +498,21 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator Respawn(float waitTime)
     {
         rb.velocity = Vector2.zero; //Se detiene el movimiento del objeto
+        animator.SetFloat("move", 0f); //Se asigna el valor del movimiento al animator
+
         yield return new WaitForSeconds(2f); //Se espera un tiempo
         rb.simulated = false; //Se desactiva la simulación del objeto
         transform.localScale = new Vector3(0, 0, 0); //Se asigna la escala del objeto a cero
+
         yield return new WaitForSeconds(waitTime); //Se espera un tiempo
         rb.simulated = true; //Se activa la simulación del objeto
         transform.position = respawnPosition; //Se asigna la posición de respawn al objeto
         lookDch = true; //Se reinicia la dirección de giro
+        rb.velocity = Vector2.zero; //Se detiene el movimiento del objeto
         animator.Play("RobotIdle", 0, 0f); //Se reproduce la animación de idle del robot
         animator.Update(0f); //Se actualiza el animator para que la animación se reproduzca correctamente
         transform.localScale = PlayerlocalScale; //Se asigna la escala del objeto
+
         yield return new WaitForSeconds(0.3f); //Se espera un tiempo
         alive = true; //Se activa la variable de vida
     }
