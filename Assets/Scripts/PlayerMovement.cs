@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
 
     //Respawn and Die
     [Header("Respawn")] //sección de respawn
-    [SerializeField] bool alive = true; //Variable para saber si el Player está vivo
+    public bool alive = true; //Variable para saber si el Player está vivo
     public Vector2 respawnPosition; //Posición de respawn
 
     //CHECKING GROUND
