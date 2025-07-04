@@ -117,8 +117,9 @@ public class PlayerMovement : MonoBehaviour
                 Propulsion(); //Se llama la función de propulsión
             }
 
+            ActualizarAnimaciones(); //Se llama a la función de actualización de animaciones
         }
-        Debug.Log("is wallJumpping es " + isWallJumping);
+
     }
 
     bool IsGrounded() //Verifica si el Player está en el suelo
@@ -146,11 +147,48 @@ public class PlayerMovement : MonoBehaviour
     public void Move(InputAction.CallbackContext context)
     {
         horizontalMove = context.ReadValue<Vector2>().x; //Se obtiene el valor del movimiento
-        animator.SetFloat("move", Mathf.Abs(horizontalMove)); //Se asigna el valor del movimiento al animator
-
         dashInput = context.ReadValue<Vector2>(); //Se obtiene el valor del dashInput
     }
 
+    void ActualizarAnimaciones()
+    {
+        if (IsGrounded())
+        {
+            animator.SetFloat("move", Mathf.Abs(horizontalMove)); //Se asigna el valor del movimiento al animator
+        }
+        else
+        {
+            animator.SetFloat("move", 0f); //Se asigna el valor del movimiento al animator
+        }
+
+        if (rb.velocity.y > 0.1)
+        {
+            //Si el Player está saltando
+            animator.SetBool("saltar", true); //Se activa la animación de salto
+            animator.SetBool("fall", false); //Se desactiva la animación de caída
+        }
+        else if (rb.velocity.y < -0.1)
+        { //Si el Player está cayendo
+            animator.SetBool("saltar", false); //Se desactiva la animación de salto
+            animator.SetBool("fall", true); //Se activa la animación de caída
+        }
+        else if (IsGrounded())
+        { //Si el Player está en el suelo
+            animator.SetBool("saltar", false); //Se desactiva la animación de salto
+            animator.SetBool("fall", false); //Se desactiva la animación de caída
+        }
+
+        if (isWallSliding) //Si el Player está deslizándose por la pared
+        {
+            animator.SetBool("saltar", false); //Se desactiva la animación de salto
+            animator.SetBool("sliding", true); //Se activa la animación de deslizamiento por la pared
+        }
+        else
+        {
+            animator.SetBool("sliding", false); //Se desactiva la animación de deslizamiento por la pared
+        }
+
+    }
 
     //INPUT ACTION DE SALTO
     public void Jump(InputAction.CallbackContext context) 
@@ -158,13 +196,11 @@ public class PlayerMovement : MonoBehaviour
         //Se verifica si se presiona el botón de salto
         if (context.started && !isWallJumping)  
         {
-            animator.SetBool("saltar", true); //Se activa la animación de salto
             DoJump(); //Se llama a la función de salto
             availableJumps--; //Se reduce el número de saltos disponibles
         }
         if(context.started && wallJumpTimer > 0f)
         {
-            animator.SetBool("saltar", true); //Se activa la animación de salto
             DoWallJump(); //Se llama a la función de salto de la pared si el timer es mayor a 0
         }
 
@@ -261,9 +297,6 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, 0f); // Reset vertical velocity
             rb.AddForce(Vector3.up * force, ForceMode2D.Impulse); // Se aplica la fuerza del salto
 
-            animator.SetBool("saltar", true); //Se activa la animación de salto
-            animator.SetBool("fall", false); //Se desactiva la animación de caída
-
             coyoteCounter = 0f; //Se reinicia el contador del tiempo de salto antes de caer
             Debug.Log("Salto Normal"); //Se imprime un mensaje en la consola
         }
@@ -275,7 +308,6 @@ public class PlayerMovement : MonoBehaviour
 
         float jumpDir = -wallJumpDirection; //Se asigna la dirección del salto de la pared
 
-        animator.SetBool("saltar", true); //Se activa la animación de salto
         isWallJumping = true; //Se activa la variable de salto de la pared
 
         rb.velocity = new Vector2(jumpDir * wallJumpPower.x, wallJumpPower.y); //Se aplica la fuerza del salto de la pared
@@ -303,8 +335,6 @@ public class PlayerMovement : MonoBehaviour
             if(wallSlideTimer< maxWallSlideTime)
             {
                 isWallSliding = true;//Se activa la variable de deslizamiento por la pared
-                animator.SetBool("saltar", false); //Se desactiva la animación de salto
-                animator.SetBool("sliding", true); //Se activa la animación de deslizamiento por la pared
                 wallSlideTimer += Time.deltaTime; //Se incrementa el contador del tiempo de deslizamiento por la pared
                 
                 rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -wallSlideSpeed)); //Se limita la velocidad vertical del objeto
@@ -313,14 +343,12 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 isWallSliding = false; //Se desactiva la variable de deslizamiento por la pared
-                animator.SetBool("sliding", false); //Se activa la animación de deslizamiento por la pared
             }
 
         }
 
         else
         {
-            animator.SetBool("sliding", false); //Se activa la animación de deslizamiento por la pared
             isWallSliding = false; //Se desactiva la variable de deslizamiento por la pared
             wallSlideTimer = 0f; //Se reinicia el contador del tiempo de deslizamiento por la pared
         }
@@ -356,18 +384,10 @@ public class PlayerMovement : MonoBehaviour
         //Si el Player no está en el suelo y está cayendo
         if (!IsGrounded () && rb.velocity.y < -0.1f  /* && !isPropulsing*/)
         {
-            animator.SetBool("saltar", false); //Se desactiva la animación de salto
-            animator.SetBool("fall", true);//Se activa la animación de caída
             rb.velocity -= vecGravity * fallMultiplier * Time.deltaTime; //Se aplica la gravedad al objeto
 
         }
 
-        else
-        {
-            animator.SetBool("fall", false);//Se desactiva la animación de caída
-        }
-
-       
     }
 
     //Función para hacer la propulsión
@@ -433,59 +453,29 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-
-    void UpdateAnimations()
-    {
-        if (IsGrounded())
-        {
-            animator.SetBool("saltar", false);//Se desactiva la animación de salto
-            animator.SetBool("fall", false);//Se desactiva la animación de caída
-
-            isPropulsing = false;//Se desactiva la variable de propulsión
-
-            //availableJumps = totalExtraJumps;
-            canDash = true; //Se activa la variable de poder dashear
-        }
-    }
-    //COLLISIONES
-    /*
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        //Si el Player colisiona con el suelo
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
-        {
-            animator.SetBool("saltar",false);//Se desactiva la animación de salto
-            animator.SetBool("fall", false);//Se desactiva la animación de caída
-
-            isPropulsing = false;//Se desactiva la variable de propulsión
-
-            //availableJumps = totalExtraJumps;
-            canDash = true; //Se activa la variable de poder dashear
-        }
-
-    }
-    */
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.CompareTag("_Respawn"))
         {
             //Die(); //Se llama a la función de muerte
         }
-
-        if(collision.gameObject.layer == LayerMask.NameToLayer("Reset Zone"))
+        if (alive)
         {
-            rb.velocity = Vector2.zero; //Se detiene el movimiento del objetoº
-            rb.simulated = false; //Se desactiva la simulación del objeto
+            if(collision.gameObject.layer == LayerMask.NameToLayer("Reset Zone"))
+            {
+                rb.velocity = Vector2.zero; //Se detiene el movimiento del objetoº
+                rb.simulated = false; //Se desactiva la simulación del objeto
 
-            Debug.Log("Estas Muerto!"); //Se imprime un mensaje en la consola
-        }
+                Debug.Log("Estas Muerto!"); //Se imprime un mensaje en la consola
+            }
 
-        if(collision.gameObject.CompareTag("Die"))
-        {   
+            if(collision.gameObject.CompareTag("Die"))
+            {   
            
-            animator.SetTrigger("death"); //Se activa la animación de muerte
-            alive = false; //Se desactiva la variable de vida
-            Die(); //Se llama a la función de muerte
+                animator.SetTrigger("death"); //Se activa la animación de muerte
+                alive = false; //Se desactiva la variable de vida
+                Die(); //Se llama a la función de muerte
+            }
         }
     }
 
