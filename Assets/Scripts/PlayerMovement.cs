@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")] //sección de movimiento
     [SerializeField] float speed = 6f; //variable para la velocidad
     [SerializeField] bool lookDch = true; //Variable para mirar a la derecha
+    [SerializeField] ParticleSystem dustParticle; //Partícula de polvo al caminar
 
     //SALTO
     [Header("Jump")] //sección de salto
@@ -69,9 +70,9 @@ public class PlayerMovement : MonoBehaviour
 
     //DASHEO
     [Header("Dash")] //sección de dash
-    [SerializeField] float dashForce = 30f;       // Fuerza del dash
-    [SerializeField] float dashTime = 0.2f;   // Duración del dash
-    [SerializeField] float dashCooldown = 0.5f;   // Tiempo entre dashes
+    [SerializeField] float dashForce = 30f; // Fuerza del dash
+    [SerializeField] float dashTime = 0.2f; // Duración del dash
+    [SerializeField] float dashCooldown = 0.5f; // Tiempo entre dashes
 
     bool isDashing = false; //Variable para saber si se está haciendo dash
     bool canDash = true; //Variable para saber si se puede hacer dash
@@ -117,7 +118,17 @@ public class PlayerMovement : MonoBehaviour
                 Mover(); //Se llama la función de movimiento
                 Propulsion(); //Se llama la función de propulsión
             }
-
+            if (IsGrounded() && horizontalMove != 0f)
+            {
+                if (!dustParticle.isPlaying) //Si la partícula de polvo no está reproduciéndose
+                {
+                    dustParticle.Play(); //Se reproduce la partícula de polvo al caminar
+                }
+            }
+            else
+            {
+                dustParticle.Stop(); //Se detiene la partícula de polvo al caminar
+            }
         }
         
         ActualizarAnimaciones(); //Se llama a la función de actualización de animaciones
