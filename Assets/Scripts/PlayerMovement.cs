@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     //CHECKING GROUND
     [Header("Ground Check")]//Titulo de la sección
     [SerializeField] TrailRenderer dashTrail; // Prefab del trail del dash
-    [SerializeField] GameObject dashEffect;
+    //[SerializeField] GameObject dashEffect;
     [SerializeField] Transform groundCheck; //Empty object que verifica si estas en el suelo
     [SerializeField] Transform groundCheck2; //Empty object que verifica si estas en el suelo
     [SerializeField] LayerMask groundLayer; //Layer del Suelo
@@ -69,7 +69,7 @@ public class PlayerMovement : MonoBehaviour
 
     //DASHEO
     [Header("Dash")] //sección de dash
-    [SerializeField] float dashForce = 15f;       // Fuerza del dash
+    [SerializeField] float dashForce = 30f;       // Fuerza del dash
     [SerializeField] float dashTime = 0.2f;   // Duración del dash
     [SerializeField] float dashCooldown = 0.5f;   // Tiempo entre dashes
 
@@ -86,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponent<Animator>(); //Se obtiene el componente Animator
         rb = GetComponent<Rigidbody2D>(); //Se obtiene el componente Rigidbody2D
         spriteRenderer = GetComponent<SpriteRenderer>(); //Se obtiene el componente SpriteRenderer
-        dashEffect.SetActive(false); //Se desactiva el efecto del dash
+        //dashEffect.SetActive(false); //Se desactiva el efecto del dash
         vecGravity = new Vector2(0, -Physics2D.gravity.y); //Se obtine la gravedad del objeto
         normalGravityScale = rb.gravityScale;   //Se guarda la gravedad normal del objeto
 
@@ -458,16 +458,15 @@ public class PlayerMovement : MonoBehaviour
                 Instantiate(dashGhostPrefab, transform.position, Quaternion.identity);
             }
          */
-            //dashTrail.emitting = true; // Se activa el trail del dash
-            dashEffect.SetActive(true); // Se activa el efecto del dash
+            dashTrail.emitting = true; // Se activa el trail del dash
             elapsedTime += 0.05f; // Se incrementa el tiempo transcurrido
             yield return new WaitForSeconds(0.05f); //Se espera un tiempo
         }
 
         rb.gravityScale = normalGravityScale; //Se asigna la gravedad normal al objeto
         animator.SetBool("dash", false); //Se Desactiva la animación de dash
-        //dashTrail.emitting = false; // Se desactiva el trail del dash
-        dashEffect.SetActive(false); // Se desactiva el efecto del dash
+        dashTrail.emitting = false; // Se desactiva el trail del dash
+        //dashEffect.SetActive(false); // Se desactiva el efecto del dash
         isDashing = false; //Se desactiva la variable de dash
 
         yield return new WaitForSeconds(dashCooldown); //Se espera un tiempo para CoolDown
