@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] TrailRenderer dashTrail; // Prefab del trail del dash
     [SerializeField] GameObject dashEffect;
     [SerializeField] Transform groundCheck; //Empty object que verifica si estas en el suelo
+    [SerializeField] Transform groundCheck2; //Empty object que verifica si estas en el suelo
     [SerializeField] LayerMask groundLayer; //Layer del Suelo
     //[SerializeField] GameObject dashGhostPrefab;
 
@@ -117,15 +118,17 @@ public class PlayerMovement : MonoBehaviour
                 Propulsion(); //Se llama la función de propulsión
             }
 
-            ActualizarAnimaciones(); //Se llama a la función de actualización de animaciones
         }
+        
+        ActualizarAnimaciones(); //Se llama a la función de actualización de animaciones
 
     }
 
     bool IsGrounded() //Verifica si el Player está en el suelo
     {
         RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, 0.1f, groundLayer); //Se lanza un rayo hacia abajo desde el objeto
-        return hit.collider != null; //Si el rayo colisiona con algo, devuelve true
+        RaycastHit2D hit2 = Physics2D.Raycast(groundCheck2.position, Vector2.down, 0.1f, groundLayer); //Se lanza un rayo hacia abajo desde el objeto
+        return hit.collider != null || hit2.collider != null; //Si el rayo colisiona con algo, devuelve true
     }
 
     bool WallCheck() //Verifica si el Player está en la pared
@@ -138,6 +141,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * 0.1f);
+        Gizmos.DrawLine(groundCheck2.position, groundCheck2.position + Vector3.down * 0.1f);
         Gizmos.DrawWireSphere(wallCheck.position, 0.1f); //Dibuja un círculo en la posición del wallCheck
     }
 
@@ -152,47 +156,59 @@ public class PlayerMovement : MonoBehaviour
 
     void ActualizarAnimaciones()
     {
-        if (IsGrounded())
+        if (alive)
         {
-            animator.SetFloat("move", Mathf.Abs(horizontalMove)); //Se asigna el valor del movimiento al animator
+            if (IsGrounded())
+            {
+                animator.SetFloat("move", Mathf.Abs(horizontalMove)); //Se asigna el valor del movimiento al animator
+            }
+            else
+            {
+                animator.SetFloat("move", 0f); //Se asigna el valor del movimiento al animator
+            }
+
+            if (rb.velocity.y > 0.1)
+            {
+                //Si el Player está saltando
+                animator.SetBool("saltar", true); //Se activa la animación de salto
+                animator.SetBool("fall", false); //Se desactiva la animación de caída
+            }
+            else if (rb.velocity.y < -0.1)
+            { //Si el Player está cayendo
+                animator.SetBool("saltar", false); //Se desactiva la animación de salto
+                animator.SetBool("fall", true); //Se activa la animación de caída
+            }
+            else if (IsGrounded())
+            { //Si el Player está en el suelo
+                animator.SetBool("saltar", false); //Se desactiva la animación de salto
+                animator.SetBool("fall", false); //Se desactiva la animación de caída
+            }
+
+            if (isWallSliding) //Si el Player está deslizándose por la pared
+            {
+                animator.SetBool("saltar", false); //Se desactiva la animación de salto
+                animator.SetBool("sliding", true); //Se activa la animación de deslizamiento por la pared
+            }
+            else
+            {
+                animator.SetBool("sliding", false); //Se desactiva la animación de deslizamiento por la pared
+            }
         }
+
         else
         {
             animator.SetFloat("move", 0f); //Se asigna el valor del movimiento al animator
-        }
-
-        if (rb.velocity.y > 0.1)
-        {
-            //Si el Player está saltando
-            animator.SetBool("saltar", true); //Se activa la animación de salto
-            animator.SetBool("fall", false); //Se desactiva la animación de caída
-        }
-        else if (rb.velocity.y < -0.1)
-        { //Si el Player está cayendo
-            animator.SetBool("saltar", false); //Se desactiva la animación de salto
-            animator.SetBool("fall", true); //Se activa la animación de caída
-        }
-        else if (IsGrounded())
-        { //Si el Player está en el suelo
             animator.SetBool("saltar", false); //Se desactiva la animación de salto
             animator.SetBool("fall", false); //Se desactiva la animación de caída
-        }
-
-        if (isWallSliding) //Si el Player está deslizándose por la pared
-        {
-            animator.SetBool("saltar", false); //Se desactiva la animación de salto
-            animator.SetBool("sliding", true); //Se activa la animación de deslizamiento por la pared
-        }
-        else
-        {
             animator.SetBool("sliding", false); //Se desactiva la animación de deslizamiento por la pared
+            animator.SetBool("dash", false); //Se desactiva la animación de dash
         }
-
     }
 
     //INPUT ACTION DE SALTO
     public void Jump(InputAction.CallbackContext context) 
     {
+        if (!alive) return; //Si el Player no está vivo, no se hace nada
         //Se verifica si se presiona el botón de salto
         if (context.started && !isWallJumping)  
         {

@@ -296,6 +296,7 @@ GameObject:
   - component: {fileID: 3705508380989716240}
   - component: {fileID: 174188352126373959}
   - component: {fileID: 8348035017622676354}
+  - component: {fileID: 1025319337363561773}
   - component: {fileID: 3562058795440805144}
   m_Layer: 8
   m_Name: Pinchos
@@ -337,7 +338,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 5
+  m_GravityScale: 12
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -401,6 +402,27 @@ PolygonCollider2D:
       - {x: 0.15998077, y: 0.22744736}
       - {x: 0.2348814, y: -0.21686816}
   m_UseDelaunayMesh: 0
+--- !u!95 &1025319337363561773
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4757247488024499107}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2c6ead1607c8beb4f948b48d2429fbff, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &3562058795440805144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416,6 +438,7 @@ MonoBehaviour:
   trampDetection: {fileID: 8873696003390972898}
   tramp: {fileID: 4757247488024499107}
   rbTramp: {fileID: 174188352126373959}
+  trampAnimator: {fileID: 1025319337363561773}
   trampPosition: {x: 0, y: 0}
 --- !u!1 &8873696003390972898
 GameObject:
@@ -444,7 +467,7 @@ Transform:
   m_GameObject: {fileID: 8873696003390972898}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.15, y: -5.93, z: 0}
+  m_LocalPosition: {x: 0.04, y: -4.94, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -482,7 +505,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.14946938, y: 1.0232949}
+  m_Offset: {x: 0, y: -0.3195846}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -493,7 +516,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.70106125, y: 9.20935}
+  m_Size: {x: 2.3563874, y: 8.999666}
   m_EdgeRadius: 0
 --- !u!114 &932953091226025064
 MonoBehaviour:
@@ -510,4 +533,5 @@ MonoBehaviour:
   trampDetection: {fileID: 8873696003390972898}
   tramp: {fileID: 4757247488024499107}
   rbTramp: {fileID: 174188352126373959}
+  trampAnimator: {fileID: 1025319337363561773}
   trampPosition: {x: 0, y: 0}
