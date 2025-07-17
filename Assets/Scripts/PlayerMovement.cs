@@ -35,6 +35,7 @@ public class PlayerMovement : MonoBehaviour
     //SALTO
     [Header("Jump")] //sección de salto
     public bool canDoubleJump = false; //Variable para el doble salto
+    [SerializeField] bool isDoubleJumping = false; //Variable para saber si se está haciendo doble salto
     [SerializeField] float jumpForce = 10f; //Fuerza del salto
     [SerializeField] int totalJumps = 2; //Saltos extra 
     [SerializeField] int availableJumps; //saltos disponibles
@@ -118,17 +119,7 @@ public class PlayerMovement : MonoBehaviour
                 Mover(); //Se llama la función de movimiento
                 Propulsion(); //Se llama la función de propulsión
             }
-            if (IsGrounded() && horizontalMove != 0f)
-            {
-                if (!dustParticle.isPlaying) //Si la partícula de polvo no está reproduciéndose
-                {
-                    dustParticle.Play(); //Se reproduce la partícula de polvo al caminar
-                }
-            }
-            else
-            {
-                dustParticle.Stop(); //Se detiene la partícula de polvo al caminar
-            }
+            
         }
         
         ActualizarAnimaciones(); //Se llama a la función de actualización de animaciones
@@ -167,53 +158,47 @@ public class PlayerMovement : MonoBehaviour
 
     void ActualizarAnimaciones()
     {
-        if (alive)
+        if (!alive)
         {
-            if (IsGrounded())
-            {
-                animator.SetFloat("move", Mathf.Abs(horizontalMove)); //Se asigna el valor del movimiento al animator
-            }
-            else
-            {
-                animator.SetFloat("move", 0f); //Se asigna el valor del movimiento al animator
-            }
-
-            if (rb.velocity.y > 0.1)
-            {
-                //Si el Player está saltando
-                animator.SetBool("saltar", true); //Se activa la animación de salto
-                animator.SetBool("fall", false); //Se desactiva la animación de caída
-            }
-            else if (rb.velocity.y < -0.1)
-            { //Si el Player está cayendo
-                animator.SetBool("saltar", false); //Se desactiva la animación de salto
-                animator.SetBool("fall", true); //Se activa la animación de caída
-            }
-            else if (IsGrounded())
-            { //Si el Player está en el suelo
-                animator.SetBool("saltar", false); //Se desactiva la animación de salto
-                animator.SetBool("fall", false); //Se desactiva la animación de caída
-            }
-
-            if (isWallSliding) //Si el Player está deslizándose por la pared
-            {
-                animator.SetBool("saltar", false); //Se desactiva la animación de salto
-                animator.SetBool("sliding", true); //Se activa la animación de deslizamiento por la pared
-            }
-            else
-            {
-                animator.SetBool("sliding", false); //Se desactiva la animación de deslizamiento por la pared
-            }
+            // Desactivar todas las animaciones en estado inactivo
+            animator.SetFloat("move", 0f);
+            animator.SetBool("saltar", false);
+            animator.SetBool("fall", false);
+            animator.SetBool("sliding", false);
+            animator.SetBool("dash", false);
+            return;
         }
 
-        else
+        // Movimiento en el suelo
+        animator.SetFloat("move", IsGrounded() ? Mathf.Abs(horizontalMove) : 0f);
+
+        // Animaciones verticales
+        float verticalVelocity = rb.velocity.y;
+
+        if (verticalVelocity > 0.1f)
         {
-            animator.SetFloat("move", 0f); //Se asigna el valor del movimiento al animator
-            animator.SetBool("saltar", false); //Se desactiva la animación de salto
-            animator.SetBool("fall", false); //Se desactiva la animación de caída
-            animator.SetBool("sliding", false); //Se desactiva la animación de deslizamiento por la pared
-            animator.SetBool("dash", false); //Se desactiva la animación de dash
+            // Saltando
+            animator.SetBool("saltar", !isDoubleJumping);
+            animator.SetBool("doublejump", isDoubleJumping);
+            animator.SetBool("fall", false);
         }
+        else if (verticalVelocity < -0.1f)
+        {
+            // Cayendo
+            animator.SetBool("saltar", false);
+            animator.SetBool("doublejump", false);
+            animator.SetBool("fall", true);
+        }
+        else if (IsGrounded())
+        {
+            // En el suelo
+            animator.SetBool("saltar", false);
+            animator.SetBool("doublejump", false);
+            animator.SetBool("fall", false);
+        }
+
+        // Deslizamiento en pared
+        animator.SetBool("sliding", isWallSliding);
     }
 
     //INPUT ACTION DE SALTO
@@ -305,6 +290,7 @@ public class PlayerMovement : MonoBehaviour
             if(availableJumps <= 0)
             {
                 availableJumps = totalJumps; //Se reinicia el número de saltos disponibles
+                isDoubleJumping = false; //Se desactiva la variable de doble salto
             }
         }
 
@@ -322,10 +308,17 @@ public class PlayerMovement : MonoBehaviour
         //Si el Player está en el suelo
         if (coyoteCounter > 0f || availableJumps > 0)
         {
-            if(Mathf.Abs(horizontalMove) > 0.1f)
+            if (availableJumps == 1)
+            {
+                isDoubleJumping = true; //Se activa la variable de doble salto
+            }
+
+            if (Mathf.Abs(horizontalMove) > 0.1f)
             {
                force *= 0.80f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
             }
+
+            StartCoroutine(Dust()); //Se inicia la corrutina de polvo al caminar
 
             rb.velocity = new Vector2(rb.velocity.x, 0f); // Reset vertical velocity
             rb.AddForce(Vector3.up * force, ForceMode2D.Impulse); // Se aplica la fuerza del salto
@@ -333,6 +326,13 @@ public class PlayerMovement : MonoBehaviour
             coyoteCounter = 0f; //Se reinicia el contador del tiempo de salto antes de caer
             Debug.Log("Salto Normal"); //Se imprime un mensaje en la consola
         }
+    }
+
+    IEnumerator Dust()
+    {
+        dustParticle.Play(); //Se reproduce la partícula de polvo al caminar
+        yield return new WaitForSeconds(0.1f); //Se espera un tiempo
+        dustParticle.Stop(); //Se detiene la partícula de polvo al caminar
     }
 
     void DoWallJump()
@@ -365,7 +365,7 @@ public class PlayerMovement : MonoBehaviour
         //Si el Player está en la pared y no está en el suelo y se está moviendo
         if (WallCheck() && !IsGrounded() && horizontalMove != 0f)
         {
-            if(wallSlideTimer< maxWallSlideTime)
+            if(wallSlideTimer < maxWallSlideTime)
             {
                 isWallSliding = true;//Se activa la variable de deslizamiento por la pared
                 wallSlideTimer += Time.deltaTime; //Se incrementa el contador del tiempo de deslizamiento por la pared
