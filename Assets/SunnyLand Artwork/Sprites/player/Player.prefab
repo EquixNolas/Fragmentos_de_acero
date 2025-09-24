@@ -495,11 +495,11 @@ MonoBehaviour:
   speed: 5
   lookDch: 0
   dustParticle: {fileID: 6583709396285096363}
-  canDoubleJump: 0
-  jumpForce: 10
-  totalJumps: 2
+  isDoubleJumping: 0
+  jumpForce: 11
+  totalJumps: 1
   availableJumps: 2
-  coyoteTime: 0.2
+  coyoteTime: 0.17
   coyoteCounter: 0.2
   fallMultiplier: 1.2
   wallJumpTime: 0.2
@@ -512,6 +512,7 @@ MonoBehaviour:
   wallJumpDirection: 1
   maxWallSlideTime: 0.5
   planeoSpeed: 2
+  dashUnlock: 0
   dashForce: 30
   dashTime: 0.1
   dashCooldown: 0.5

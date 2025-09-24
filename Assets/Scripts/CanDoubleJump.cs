@@ -11,7 +11,7 @@ public class CanDoubleJump : MonoBehaviour
             PlayerMovement pm = other.GetComponent<PlayerMovement>();
             if (pm != null)
             {
-                pm.canDoubleJump = true; //Desbloquea la habilidad
+                pm.totalJumps = 2; //Desbloquea la habilidad
                 Debug.Log("Double Jump unlocked!");
             }
             Destroy(gameObject); // Elimina el pickup tras recogerlo

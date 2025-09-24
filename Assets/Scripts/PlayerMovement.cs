@@ -6,14 +6,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
-    Rigidbody2D rb;
+    public Rigidbody2D rb;
     Animator animator;
 
     //Respawn and Die
     [Header("Respawn")] //sección de respawn
     public bool alive = true; //Variable para saber si el Player está vivo
     public Vector2 respawnPosition; //Posición de respawn
-
+    TimeChanger timeChanger;
     //CHECKING GROUND
     [Header("Ground Check")]//Titulo de la sección
     [SerializeField] TrailRenderer dashTrail; // Prefab del trail del dash
@@ -34,13 +34,13 @@ public class PlayerMovement : MonoBehaviour
 
     //SALTO
     [Header("Jump")] //sección de salto
-    public bool canDoubleJump = false; //Variable para el doble salto
+    //public bool canDoubleJump = false; //Variable para el doble salto
     [SerializeField] bool isDoubleJumping = false; //Variable para saber si se está haciendo doble salto
-    [SerializeField] float jumpForce = 10f; //Fuerza del salto
-    [SerializeField] int totalJumps = 2; //Saltos extra 
+    [SerializeField] float jumpForce = 11f; //Fuerza del salto
+    public int totalJumps = 1; //Saltos extra 
     [SerializeField] int availableJumps; //saltos disponibles
-    [SerializeField] float coyoteTime = 0.2f; //Tiempo de salto antes de caer
-    [SerializeField] float coyoteCounter = 0; //Contador del tiempo de salto antes de caer
+    [SerializeField] float coyoteTime = 0.17f; //Tiempo de salto antes de caer
+    [SerializeField] float coyoteCounter = 0.2f; //Contador del tiempo de salto antes de caer
     [SerializeField] float fallMultiplier = 1.2f; //Multiplicador de gravedad para caer más rápido
 
     //WALL JUMP
@@ -71,8 +71,9 @@ public class PlayerMovement : MonoBehaviour
 
     //DASHEO
     [Header("Dash")] //sección de dash
+    [SerializeField] bool dashUnlock = false;
     [SerializeField] float dashForce = 30f; // Fuerza del dash
-    [SerializeField] float dashTime = 0.2f; // Duración del dash
+    [SerializeField] float dashTime = 0.1f; // Duración del dash
     [SerializeField] float dashCooldown = 0.5f; // Tiempo entre dashes
 
     bool isDashing = false; //Variable para saber si se está haciendo dash
@@ -124,6 +125,12 @@ public class PlayerMovement : MonoBehaviour
         
         ActualizarAnimaciones(); //Se llama a la función de actualización de animaciones
 
+        if (IsGrounded())
+        {
+            totalJumps = availableJumps;
+        }
+
+        //Debug.Log(availableJumps);
     }
 
     bool IsGrounded() //Verifica si el Player está en el suelo
@@ -206,6 +213,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!alive) return; //Si el Player no está vivo, no se hace nada
         //Se verifica si se presiona el botón de salto
+        timeChanger.destryActive = true;
+
         if (context.started && !isWallJumping)  
         {
             DoJump(); //Se llama a la función de salto
@@ -232,7 +241,7 @@ public class PlayerMovement : MonoBehaviour
     //INPUT ACTION DE DASHEO
     public void Dash(InputAction.CallbackContext context)
     {
-        if (alive)
+        if (alive && dashUnlock)
         {
             //Se verifica si se presiona el botón de dash y si se puede hacer dash
             if (context.started && canDash)
@@ -304,7 +313,7 @@ public class PlayerMovement : MonoBehaviour
     void DoJump()
     {
         float force = jumpForce; //Se asigna la fuerza del salto
-
+        availableJumps--;
         //Si el Player está en el suelo
         if (coyoteCounter > 0f || availableJumps > 0)
         {
@@ -326,6 +335,7 @@ public class PlayerMovement : MonoBehaviour
             coyoteCounter = 0f; //Se reinicia el contador del tiempo de salto antes de caer
             Debug.Log("Salto Normal"); //Se imprime un mensaje en la consola
         }
+
     }
 
     IEnumerator Dust()
