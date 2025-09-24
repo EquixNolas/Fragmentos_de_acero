@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
@@ -13,13 +14,14 @@ public class PlayerMovement : MonoBehaviour
     [Header("Respawn")] //sección de respawn
     public bool alive = true; //Variable para saber si el Player está vivo
     public Vector2 respawnPosition; //Posición de respawn
-    TimeChanger timeChanger;
     //CHECKING GROUND
     [Header("Ground Check")]//Titulo de la sección
     [SerializeField] TrailRenderer dashTrail; // Prefab del trail del dash
     //[SerializeField] GameObject dashEffect;
     [SerializeField] Transform groundCheck; //Empty object que verifica si estas en el suelo
     [SerializeField] Transform groundCheck2; //Empty object que verifica si estas en el suelo
+    [SerializeField] Transform jumpReset; //Empty object que verifica si estas en el suelo
+    [SerializeField] GameObject jumpResetObject;
     [SerializeField] LayerMask groundLayer; //Layer del Suelo
     //[SerializeField] GameObject dashGhostPrefab;
 
@@ -36,12 +38,14 @@ public class PlayerMovement : MonoBehaviour
     [Header("Jump")] //sección de salto
     //public bool canDoubleJump = false; //Variable para el doble salto
     [SerializeField] bool isDoubleJumping = false; //Variable para saber si se está haciendo doble salto
-    [SerializeField] float jumpForce = 11f; //Fuerza del salto
+    [SerializeField] float jumpForce = 10f; //Fuerza del salto
     public int totalJumps = 1; //Saltos extra 
+    [SerializeField] bool jumpQueued = false;
     [SerializeField] int availableJumps; //saltos disponibles
     [SerializeField] float coyoteTime = 0.17f; //Tiempo de salto antes de caer
     [SerializeField] float coyoteCounter = 0.2f; //Contador del tiempo de salto antes de caer
     [SerializeField] float fallMultiplier = 1.2f; //Multiplicador de gravedad para caer más rápido
+    public bool pulsarBoton;
 
     //WALL JUMP
     [Header("Wall Jump")] //sección de salto de la pared
@@ -80,7 +84,6 @@ public class PlayerMovement : MonoBehaviour
     bool canDash = true; //Variable para saber si se puede hacer dash
     Vector2 dashInput; // Variable para la dirección del dash
 
-    
     Vector3 PlayerlocalScale; //Escala del objeto
 
     // Start is called before the first frame update
@@ -98,14 +101,17 @@ public class PlayerMovement : MonoBehaviour
         PlayerlocalScale = GetComponent<Transform>().localScale; //Se obtiene la escala del objeto
         respawnPosition = transform.position; //Se obtiene la posición de respawn
 
+        pulsarBoton = false; 
         lookDch = true; //Se inicializa la dirección de giro a la derecha
         alive = true; //Se activa la variable de vida
+
+        jumpResetObject.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        CoyoteTimeControl(); //Se llama a la función de control del tiempo de salto antes de caer
+        //CoyoteTimeControl(); //Se llama a la función de control del tiempo de salto antes de caer
 
         if (alive)
         {
@@ -121,14 +127,27 @@ public class PlayerMovement : MonoBehaviour
                 Propulsion(); //Se llama la función de propulsión
             }
             
-        }
-        
-        ActualizarAnimaciones(); //Se llama a la función de actualización de animaciones
+            if (IsGrounded())
+            {
+                availableJumps = totalJumps;
+                jumpResetObject.SetActive(false);
+                Debug.Log("Se desactiva el raycast");
+            }
 
+            if (jumpQueued && availableJumps > 0) 
+            {
+                DoJump();
+                jumpQueued = false; 
+            }
+        }
+
+        Debug.Log(availableJumps);
+        ActualizarAnimaciones(); //Se llama a la función de actualización de animaciones
+        /*
         if (IsGrounded())
         {
             totalJumps = availableJumps;
-        }
+        }*/
 
         //Debug.Log(availableJumps);
     }
@@ -137,6 +156,7 @@ public class PlayerMovement : MonoBehaviour
     {
         RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, 0.1f, groundLayer); //Se lanza un rayo hacia abajo desde el objeto
         RaycastHit2D hit2 = Physics2D.Raycast(groundCheck2.position, Vector2.down, 0.1f, groundLayer); //Se lanza un rayo hacia abajo desde el objeto
+        RaycastHit2D hit3 = Physics2D.Raycast(jumpReset.position, Vector2.down, 0.1f, groundLayer); //Se lanza un rayo hacia abajo desde el objeto
         return hit.collider != null || hit2.collider != null; //Si el rayo colisiona con algo, devuelve true
     }
 
@@ -151,6 +171,7 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * 0.1f);
         Gizmos.DrawLine(groundCheck2.position, groundCheck2.position + Vector3.down * 0.1f);
+        Gizmos.DrawLine(jumpReset.position, jumpReset.position + Vector3.down * 0.1f);
         Gizmos.DrawWireSphere(wallCheck.position, 0.1f); //Dibuja un círculo en la posición del wallCheck
     }
 
@@ -185,8 +206,11 @@ public class PlayerMovement : MonoBehaviour
         if (verticalVelocity > 0.1f)
         {
             // Saltando
-            animator.SetBool("saltar", !isDoubleJumping);
-            animator.SetBool("doublejump", isDoubleJumping);
+            animator.SetBool("saltar", true);
+            if (isDoubleJumping)
+            {
+                animator.SetBool("doublejump", isDoubleJumping);
+            }
             animator.SetBool("fall", false);
         }
         else if (verticalVelocity < -0.1f)
@@ -213,12 +237,15 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!alive) return; //Si el Player no está vivo, no se hace nada
         //Se verifica si se presiona el botón de salto
-        timeChanger.destryActive = true;
-
+        /*
+        pulsarBoton = true;
+        pulsarBoton = false;
+        */
         if (context.started && !isWallJumping)  
         {
-            DoJump(); //Se llama a la función de salto
-            availableJumps--; //Se reduce el número de saltos disponibles
+            //DoJump(); //se llama a la función de salto
+            if(availableJumps >0)
+            jumpQueued = true;
         }
         if(context.started && wallJumpTimer > 0f)
         {
@@ -313,16 +340,15 @@ public class PlayerMovement : MonoBehaviour
     void DoJump()
     {
         float force = jumpForce; //Se asigna la fuerza del salto
-        availableJumps--;
         //Si el Player está en el suelo
-        if (coyoteCounter > 0f || availableJumps > 0)
+        if (availableJumps > 0)
         {
-            if (availableJumps == 1)
+            if (totalJumps == 2 && availableJumps == 1)
             {
                 isDoubleJumping = true; //Se activa la variable de doble salto
             }
 
-            if (Mathf.Abs(horizontalMove) > 0.1f)
+            if (Mathf.Abs(horizontalMove) > 0.1f || isDoubleJumping)
             {
                force *= 0.80f; //Si el movimiento es mayor a 0.1, se reduce la fuerza del salto
             }
@@ -333,11 +359,20 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(Vector3.up * force, ForceMode2D.Impulse); // Se aplica la fuerza del salto
 
             coyoteCounter = 0f; //Se reinicia el contador del tiempo de salto antes de caer
+            
             Debug.Log("Salto Normal"); //Se imprime un mensaje en la consola
+
+            availableJumps--;
         }
 
+        StartCoroutine(JumpResetActive());
     }
-
+    IEnumerator JumpResetActive()
+    {
+        yield return new WaitForSeconds(0.2f);
+        jumpResetObject.SetActive(true);
+        Debug.Log("Se activa el raycast");
+    }
     IEnumerator Dust()
     {
         dustParticle.Play(); //Se reproduce la partícula de polvo al caminar
@@ -428,11 +463,11 @@ public class PlayerMovement : MonoBehaviour
         if (!IsGrounded () && rb.velocity.y < -0.1f  /* && !isPropulsing*/)
         {
             rb.velocity -= vecGravity * fallMultiplier * Time.deltaTime; //Se aplica la gravedad al objeto
-
+            isDoubleJumping = false; //Se desactiva la variable de doble salto
         }
 
     }
-
+   
     //Función para hacer la propulsión
     void Propulsion()
     {
