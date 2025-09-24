@@ -8,9 +8,8 @@ public class TimeChanger : MonoBehaviour
     float slowdown = 0.05f;
     public float slowdownTime = 1.5f;
 
-    bool pulsarBoton;
     bool activeSlowdown;
-    bool onSlowMo;
+    public bool onSlowMo;
     public bool normalTime;
 
     [SerializeField] GameObject[] objects; 
@@ -25,11 +24,11 @@ public class TimeChanger : MonoBehaviour
         canvas.SetActive(false);
     }
     private void Update()
-    { 
-        pulsarBoton = PlayerMovement.pulsarBoton;
+    {
         SlowDownOn();
         DestroyObjects();
         //TimeRecover();
+        Debug.Log(PlayerMovement.pulsarBoton);
     }
 
     void SlowDownOn()
@@ -50,11 +49,12 @@ public class TimeChanger : MonoBehaviour
 
     void DestroyObjects()
     {
-        if (normalTime && !onSlowMo || pulsarBoton)
+        if (normalTime && !onSlowMo || PlayerMovement.pulsarBoton)
         {
             Destroy(objects[0]);
             Destroy(objects[1]);
             Time.timeScale = 1f;
+            PlayerMovement.ConsumeJumpOrButton();
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
@@ -62,14 +62,14 @@ public class TimeChanger : MonoBehaviour
         onSlowMo=true;
         normalTime = false;
         activeSlowdown = true;
-        Debug.Log("Activa SlowMo");
+        //Debug.Log("Activa SlowMo");
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
         onSlowMo=false;
         normalTime = true;
         activeSlowdown = false;
-        Debug.Log("DesactivaSlowMo");
+        //Debug.Log("DesactivaSlowMo");
     }
 
 

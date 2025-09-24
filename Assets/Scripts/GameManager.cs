@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         TimeChanger = GameObject.Find("TimeSlow").GetComponent<TimeChanger>();
-        Debug.Log(TimeChanger);
     }
     // Update is called once per frame
     void Update()

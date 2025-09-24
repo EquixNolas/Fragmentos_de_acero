@@ -82,6 +82,9 @@ public class PlayerMovement : MonoBehaviour
 
     bool isDashing = false; //Variable para saber si se está haciendo dash
     bool canDash = true; //Variable para saber si se puede hacer dash
+
+    TimeChanger timeChanger;
+    bool onSlowMo;
     Vector2 dashInput; // Variable para la dirección del dash
 
     Vector3 PlayerlocalScale; //Escala del objeto
@@ -92,6 +95,7 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponent<Animator>(); //Se obtiene el componente Animator
         rb = GetComponent<Rigidbody2D>(); //Se obtiene el componente Rigidbody2D
         spriteRenderer = GetComponent<SpriteRenderer>(); //Se obtiene el componente SpriteRenderer
+        timeChanger = GameObject.Find("TimeSlow").GetComponent<TimeChanger>();
         //dashEffect.SetActive(false); //Se desactiva el efecto del dash
         vecGravity = new Vector2(0, -Physics2D.gravity.y); //Se obtine la gravedad del objeto
         normalGravityScale = rb.gravityScale;   //Se guarda la gravedad normal del objeto
@@ -112,9 +116,9 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         //CoyoteTimeControl(); //Se llama a la función de control del tiempo de salto antes de caer
-
         if (alive)
         {
+            onSlowMo = timeChanger.onSlowMo;
             Flip(); //Se llama a la función de giro
             WallSlide(); //Se llama la función de deslizamiento por la pared
             ProccessWallJump(); //Se llama a la función de salto de la pared
@@ -131,7 +135,6 @@ public class PlayerMovement : MonoBehaviour
             {
                 availableJumps = totalJumps;
                 jumpResetObject.SetActive(false);
-                Debug.Log("Se desactiva el raycast");
             }
 
             if (jumpQueued && availableJumps > 0) 
@@ -140,18 +143,14 @@ public class PlayerMovement : MonoBehaviour
                 jumpQueued = false; 
             }
         }
+        Debug.Log(pulsarBoton);
 
-        Debug.Log(availableJumps);
         ActualizarAnimaciones(); //Se llama a la función de actualización de animaciones
-        /*
-        if (IsGrounded())
-        {
-            totalJumps = availableJumps;
-        }*/
-
-        //Debug.Log(availableJumps);
     }
-
+    public void ConsumeJumpOrButton()
+    {
+        pulsarBoton = false;
+    }
     bool IsGrounded() //Verifica si el Player está en el suelo
     {
         RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, 0.1f, groundLayer); //Se lanza un rayo hacia abajo desde el objeto
@@ -237,10 +236,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!alive) return; //Si el Player no está vivo, no se hace nada
         //Se verifica si se presiona el botón de salto
-        /*
-        pulsarBoton = true;
-        pulsarBoton = false;
-        */
         if (context.started && !isWallJumping)  
         {
             //DoJump(); //se llama a la función de salto
@@ -346,6 +341,10 @@ public class PlayerMovement : MonoBehaviour
             if (totalJumps == 2 && availableJumps == 1)
             {
                 isDoubleJumping = true; //Se activa la variable de doble salto
+                if (onSlowMo && !pulsarBoton)
+                {
+                    pulsarBoton = true;
+                }
             }
 
             if (Mathf.Abs(horizontalMove) > 0.1f || isDoubleJumping)
@@ -360,8 +359,6 @@ public class PlayerMovement : MonoBehaviour
 
             coyoteCounter = 0f; //Se reinicia el contador del tiempo de salto antes de caer
             
-            Debug.Log("Salto Normal"); //Se imprime un mensaje en la consola
-
             availableJumps--;
         }
 
@@ -371,7 +368,6 @@ public class PlayerMovement : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
         jumpResetObject.SetActive(true);
-        Debug.Log("Se activa el raycast");
     }
     IEnumerator Dust()
     {
@@ -543,7 +539,7 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = Vector2.zero; //Se detiene el movimiento del objetoº
                 rb.simulated = false; //Se desactiva la simulación del objeto
 
-                Debug.Log("Estas Muerto!"); //Se imprime un mensaje en la consola
+                //Debug.Log("Estas Muerto!"); //Se imprime un mensaje en la consola
             }
 
             if(collision.gameObject.CompareTag("Die"))
