@@ -200,7 +200,7 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("move", IsGrounded() ? Mathf.Abs(horizontalMove) : 0f);
 
         // Animaciones verticales
-        float verticalVelocity = rb.velocity.y;
+        float verticalVelocity = rb.linearVelocity.y;
 
         if (verticalVelocity > 0.1f)
         {
@@ -297,7 +297,7 @@ public class PlayerMovement : MonoBehaviour
     //MOVIMIENTO
     void Mover()
     {
-        rb.velocity = new Vector2(horizontalMove * speed, rb.velocity.y); //Se asigna la velocidad del objeto
+        rb.linearVelocity = new Vector2(horizontalMove * speed, rb.linearVelocity.y); //Se asigna la velocidad del objeto
     }
    
     //Función para girar el Player
@@ -354,7 +354,7 @@ public class PlayerMovement : MonoBehaviour
 
             StartCoroutine(Dust()); //Se inicia la corrutina de polvo al caminar
 
-            rb.velocity = new Vector2(rb.velocity.x, 0f); // Reset vertical velocity
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f); // Reset vertical velocity
             rb.AddForce(Vector3.up * force, ForceMode2D.Impulse); // Se aplica la fuerza del salto
 
             coyoteCounter = 0f; //Se reinicia el contador del tiempo de salto antes de caer
@@ -384,7 +384,7 @@ public class PlayerMovement : MonoBehaviour
 
         isWallJumping = true; //Se activa la variable de salto de la pared
 
-        rb.velocity = new Vector2(jumpDir * wallJumpPower.x, wallJumpPower.y); //Se aplica la fuerza del salto de la pared
+        rb.linearVelocity = new Vector2(jumpDir * wallJumpPower.x, wallJumpPower.y); //Se aplica la fuerza del salto de la pared
         
 
         wallJumpTimer = 0f; //Se reinicia el contador del tiempo de salto de la pared
@@ -411,7 +411,7 @@ public class PlayerMovement : MonoBehaviour
                 isWallSliding = true;//Se activa la variable de deslizamiento por la pared
                 wallSlideTimer += Time.deltaTime; //Se incrementa el contador del tiempo de deslizamiento por la pared
                 
-                rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -wallSlideSpeed)); //Se limita la velocidad vertical del objeto
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -wallSlideSpeed)); //Se limita la velocidad vertical del objeto
             }
 
             else
@@ -456,9 +456,9 @@ public class PlayerMovement : MonoBehaviour
     void fall()
     {
         //Si el Player no está en el suelo y está cayendo
-        if (!IsGrounded () && rb.velocity.y < -0.1f  /* && !isPropulsing*/)
+        if (!IsGrounded () && rb.linearVelocity.y < -0.1f  /* && !isPropulsing*/)
         {
-            rb.velocity -= vecGravity * fallMultiplier * Time.deltaTime; //Se aplica la gravedad al objeto
+            rb.linearVelocity -= vecGravity * fallMultiplier * Time.deltaTime; //Se aplica la gravedad al objeto
             isDoubleJumping = false; //Se desactiva la variable de doble salto
         }
 
@@ -467,9 +467,9 @@ public class PlayerMovement : MonoBehaviour
     //Función para hacer la propulsión
     void Propulsion()
     {
-        if (isPropulsing && !IsGrounded() && rb.velocity.y < 0 && canPropulse)
+        if (isPropulsing && !IsGrounded() && rb.linearVelocity.y < 0 && canPropulse)
         {
-            rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -planeoSpeed));// Se limita la velocidad vertical del objeto
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -planeoSpeed));// Se limita la velocidad vertical del objeto
             /*
             rb.gravityScale = 0f;
 
@@ -498,7 +498,7 @@ public class PlayerMovement : MonoBehaviour
         float elapsedTime = 0f; //Se inicializa el tiempo transcurrido
 
         rb.gravityScale = 0f; //Se desactiva la gravedad del objeto
-        rb.velocity = direction * dashForce; //Se aplica la fuerza del dash
+        rb.linearVelocity = direction * dashForce; //Se aplica la fuerza del dash
 
         animator.SetBool("dash",true); //Se activa la animación de dash
 
@@ -536,7 +536,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if(collision.gameObject.layer == LayerMask.NameToLayer("Reset Zone"))
             {
-                rb.velocity = Vector2.zero; //Se detiene el movimiento del objetoº
+                rb.linearVelocity = Vector2.zero; //Se detiene el movimiento del objetoº
                 rb.simulated = false; //Se desactiva la simulación del objeto
 
                 //Debug.Log("Estas Muerto!"); //Se imprime un mensaje en la consola
@@ -564,7 +564,7 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator Respawn(float waitTime)
     {
-        rb.velocity = Vector2.zero; //Se detiene el movimiento del objeto
+        rb.linearVelocity = Vector2.zero; //Se detiene el movimiento del objeto
         animator.SetFloat("move", 0f); //Se asigna el valor del movimiento al animator
 
         yield return new WaitForSeconds(2f); //Se espera un tiempo
@@ -575,7 +575,7 @@ public class PlayerMovement : MonoBehaviour
         rb.simulated = true; //Se activa la simulación del objeto
         transform.position = respawnPosition; //Se asigna la posición de respawn al objeto
         lookDch = true; //Se reinicia la dirección de giro
-        rb.velocity = Vector2.zero; //Se detiene el movimiento del objeto
+        rb.linearVelocity = Vector2.zero; //Se detiene el movimiento del objeto
         animator.Play("RobotIdle", 0, 0f); //Se reproduce la animación de idle del robot
         animator.Update(0f); //Se actualiza el animator para que la animación se reproduzca correctamente
         transform.localScale = PlayerlocalScale; //Se asigna la escala del objeto

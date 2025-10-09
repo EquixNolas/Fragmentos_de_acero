@@ -15,8 +15,8 @@ public class TrampLaunch : MonoBehaviour
     void Awake()
     {
         playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
-        rbTramp.simulated = false; // Desactiva la simulación del Rigidbody2D al inicio
-        trampPosition = tramp.transform.position; // Guarda la posición inicial de la trampa
+        rbTramp.simulated = false; // Desactiva la simulaciï¿½n del Rigidbody2D al inicio
+        trampPosition = tramp.transform.position; // Guarda la posiciï¿½n inicial de la trampa
     }
     private void Update()
     {
@@ -30,7 +30,7 @@ public class TrampLaunch : MonoBehaviour
         if (!collision.CompareTag("Player") && collision.gameObject.layer != LayerMask.NameToLayer("Ground"))
             return;
 
-        if (collision.CompareTag("Player") && playerMovement.alive) // Asegúrate de que solo reaccione al jugador
+        if (collision.CompareTag("Player") && playerMovement.alive) // Asegï¿½rate de que solo reaccione al jugador
         {
            
             StartCoroutine(SoltarTramp()); // Llama a la corrutina para soltar la trampa
@@ -39,23 +39,23 @@ public class TrampLaunch : MonoBehaviour
 
         if(collision.gameObject.layer == LayerMask.NameToLayer("Ground")) // Verifica si colisiona con el suelo
         {
-            rbTramp.simulated = false; // Desactiva la simulación del Rigidbody2D al colisionar con el suelo
+            rbTramp.simulated = false; // Desactiva la simulaciï¿½n del Rigidbody2D al colisionar con el suelo
             Debug.Log("Colision con el suelo");
         }
     }
     IEnumerator SoltarTramp()
     {
-        trampAnimator.SetTrigger("Launch"); // Activa la animación de lanzamiento de la trampa
+        trampAnimator.SetTrigger("Launch"); // Activa la animaciï¿½n de lanzamiento de la trampa
         yield return new WaitForSeconds(.1f); // Espera 0.2 segundos antes de lanzar la trampa
-        rbTramp.simulated = true; // Activa la simulación del Rigidbody2D
-        trampDetection.SetActive(false); // Desactiva el GameObject de detección de trampas
+        rbTramp.simulated = true; // Activa la simulaciï¿½n del Rigidbody2D
+        trampDetection.SetActive(false); // Desactiva el GameObject de detecciï¿½n de trampas
     }
     IEnumerator ResetTramp()
     {
         yield return new WaitForSeconds(.2f); // Espera 1 segundo antes de resetear la trampa
-        rbTramp.simulated = false; // Desactiva la simulación del Rigidbody2D
-        tramp.transform.position = trampPosition; // Resetea la posición de la trampa al inicio
-        rbTramp.velocity = Vector2.zero; // Resetea la velocidad del Rigidbody2D
-        trampDetection.SetActive(true); // Reactiva el GameObject de detección de trampas
+        rbTramp.simulated = false; // Desactiva la simulaciï¿½n del Rigidbody2D
+        tramp.transform.position = trampPosition; // Resetea la posiciï¿½n de la trampa al inicio
+        rbTramp.linearVelocity = Vector2.zero; // Resetea la velocidad del Rigidbody2D
+        trampDetection.SetActive(true); // Reactiva el GameObject de detecciï¿½n de trampas
     }
 }
