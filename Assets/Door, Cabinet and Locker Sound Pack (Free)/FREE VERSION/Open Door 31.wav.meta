@@ -1,0 +1,31 @@
+fileFormatVersion: 2
+guid: d0870c964a2354d8094ce31e769a7290
+AssetOrigin:
+  serializedVersion: 1
+  productId: 257610
+  packageName: Door, Cabinets & Lockers (Free)
+  packageVersion: 2021.3.7f1
+  assetPath: Assets/Door, Cabinet and Locker Sound Pack (Free)/FREE VERSION/Open
+    Door 31.wav
+  uploadId: 592094
+AudioImporter:
+  externalObjects: {}
+  serializedVersion: 8
+  defaultSettings:
+    serializedVersion: 2
+    loadType: 0
+    sampleRateSetting: 1
+    sampleRateOverride: 44100
+    compressionFormat: 1
+    quality: 1
+    conversionMode: 0
+    preloadAudioData: 1
+  platformSettingOverrides: {}
+  forceToMono: 0
+  normalize: 1
+  loadInBackground: 1
+  ambisonic: 0
+  3D: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

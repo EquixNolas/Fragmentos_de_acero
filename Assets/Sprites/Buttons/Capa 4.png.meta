@@ -105,7 +105,7 @@ TextureImporter:
         width: 57
         height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,6 +191,7 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Capa 4_0: -795609996
+      Capa 4_1: -210491404
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
