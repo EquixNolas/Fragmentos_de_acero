@@ -1,14 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TrampLaunch : MonoBehaviour
 {
-    [SerializeField] GameObject trampDetection;
     [SerializeField] GameObject tramp;
+    [SerializeField] GameObject trampDetection;
+ 
     [SerializeField] Rigidbody2D rbTramp;
     [SerializeField] Animator trampAnimator;
+
     [SerializeField] Vector2 trampPosition;
+    [SerializeField] bool activatedTramp = false; 
 
     PlayerMovement playerMovement;
     // Start is called before the first frame update
@@ -24,6 +28,7 @@ public class TrampLaunch : MonoBehaviour
         {
            StartCoroutine(ResetTramp());
         }
+       
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -36,12 +41,14 @@ public class TrampLaunch : MonoBehaviour
             StartCoroutine(SoltarTramp()); // Llama a la corrutina para soltar la trampa
             Debug.Log("Detectado");
         }
-
+        
         if(collision.gameObject.layer == LayerMask.NameToLayer("Ground")) // Verifica si colisiona con el suelo
         {
             rbTramp.simulated = false; // Desactiva la simulaci�n del Rigidbody2D al colisionar con el suelo
             Debug.Log("Colision con el suelo");
         }
+
+        
     }
     IEnumerator SoltarTramp()
     {

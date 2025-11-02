@@ -2,13 +2,14 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags:
   - Ground
   - _Respawn
   - Die
   - Tramp
   - TimeSlowMo
+  - StopTramp
   layers:
   - Default
   - TransparentFX
@@ -49,8 +50,14 @@ TagManager:
   - name: BackGround
     uniqueID: 2642598493
     locked: 0
+  - name: Map1
+    uniqueID: 2344317839
+    locked: 0
   - name: Player
     uniqueID: 3823793675
+    locked: 0
+  - name: ZonasOcultas
+    uniqueID: 1134067617
     locked: 0
   - name: MidGround
     uniqueID: 3163977315
@@ -61,3 +68,5 @@ TagManager:
   - name: Assets&Props
     uniqueID: 3374755907
     locked: 0
+  m_RenderingLayers:
+  - Default

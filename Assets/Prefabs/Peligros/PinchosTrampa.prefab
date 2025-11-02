@@ -49,6 +49,11 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -70,9 +75,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1130989981
-  m_SortingLayer: 3
-  m_SortingOrder: 1
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: -1950649457
+  m_SortingLayer: 2
+  m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
   m_Color: {r: 0.8679245, g: 0.74509805, b: 0.21176471, a: 1}
   m_FlipX: 0
@@ -133,6 +139,11 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -154,9 +165,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1130989981
-  m_SortingLayer: 3
-  m_SortingOrder: 1
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: -1950649457
+  m_SortingLayer: 2
+  m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
   m_Color: {r: 0.8679245, g: 0.74509805, b: 0.21176471, a: 1}
   m_FlipX: 0
@@ -217,6 +229,11 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -238,9 +255,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1130989981
-  m_SortingLayer: 3
-  m_SortingOrder: 1
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: -1950649457
+  m_SortingLayer: 2
+  m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
   m_Color: {r: 0.8679245, g: 0.74509805, b: 0.21176471, a: 1}
   m_FlipX: 0
@@ -314,7 +332,7 @@ Transform:
   m_GameObject: {fileID: 4757247488024499107}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.04, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -325,7 +343,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &174188352126373959
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -336,8 +354,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_GravityScale: 12
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -358,6 +376,7 @@ PolygonCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4757247488024499107}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -381,7 +400,8 @@ PolygonCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 1
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -394,17 +414,17 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.32175827, y: 0.26306868}
-      - {x: -0.31344515, y: 0.25105223}
+    - - {x: 0.27361298, y: 0.16418886}
+      - {x: -0.26394564, y: 0.15200838}
       - {x: -0.21825927, y: -0.11706275}
-      - {x: -0.14904785, y: 0.21623456}
+      - {x: -0.14019012, y: -0.021104455}
       - {x: -0.0027297735, y: -0.51194763}
-      - {x: 0.15998077, y: 0.22744736}
+      - {x: 0.13554001, y: -0.13702884}
       - {x: 0.2348814, y: -0.21686816}
   m_UseDelaunayMesh: 0
 --- !u!95 &1025319337363561773
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -418,6 +438,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -435,11 +456,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a085528ec3768f42bb603f352017abc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trampDetection: {fileID: 8873696003390972898}
   tramp: {fileID: 4757247488024499107}
+  trampDetection: {fileID: 8873696003390972898}
   rbTramp: {fileID: 174188352126373959}
   trampAnimator: {fileID: 1025319337363561773}
   trampPosition: {x: 0, y: 0}
+  activatedTramp: 0
 --- !u!1 &8873696003390972898
 GameObject:
   m_ObjectHideFlags: 0
@@ -481,6 +503,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8873696003390972898}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -504,8 +527,9 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 1
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: -0.12635994, y: -0.18078327}
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.12635994, y: -0.027486801}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -515,8 +539,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 4.3276024, y: 8.722063}
+  m_Size: {x: 4.3276024, y: 8.41547}
   m_EdgeRadius: 0
 --- !u!114 &932953091226025064
 MonoBehaviour:
@@ -530,8 +553,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a085528ec3768f42bb603f352017abc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trampDetection: {fileID: 8873696003390972898}
   tramp: {fileID: 4757247488024499107}
+  trampDetection: {fileID: 8873696003390972898}
   rbTramp: {fileID: 174188352126373959}
   trampAnimator: {fileID: 1025319337363561773}
   trampPosition: {x: 0, y: 0}
+  activatedTramp: 0

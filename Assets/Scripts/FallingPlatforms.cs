@@ -15,7 +15,7 @@ public class FallingPlatforms : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        StartCoroutine(Fall());
+        
         Debug.Log("Estas Encima de la plataforma");
 
         if (collision.gameObject.CompareTag("Player"))
@@ -30,6 +30,7 @@ public class FallingPlatforms : MonoBehaviour
         {
             collision.transform.SetParent(null);
         }
+        StartCoroutine(Fall());
     }
 
     IEnumerator Fall()
