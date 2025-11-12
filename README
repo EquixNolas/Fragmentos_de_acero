@@ -1,0 +1,59 @@
+⚙️ Fragmentos de Acero — 2D Puzzle Platformer
+
+Fragmentos de Acero es un juego de plataformas 2D con desplazamiento lateral, inspirado en Celeste, Inside y Ori.
+Combina precisión, fluidez y exploración en un mundo subterráneo silencioso, lleno de ruinas tecnológicas cubiertas de polvo y acero oxidado.
+
+El jugador controla a un robot explorador antiguo que despierta tras siglos de inactividad en una cámara de mantenimiento.
+Sin enemigos ni combate, el reto está en dominar el movimiento, descubrir nuevas rutas y restaurar los fragmentos perdidos de su propio sistema.
+
+🧠 Características principales:
+
+🎮 Plataformas de precisión: control fluido y movimientos ágiles.
+⚡ Habilidades desde el inicio: doble salto y dash aéreo disponibles desde el primer nivel.
+🧩 Progresión por módulos: el robot recupera partes de su sistema que amplían sus capacidades (planeo, escalada, propulsor, rebobinado temporal).
+🌌 Narrativa ambiental: sin textos ni diálogos, la historia se revela a través de luces, ecos y hologramas olvidados.
+🔁 Respawn instantáneo: sin vidas, sin pantallas de “Game Over”, solo ritmo y aprendizaje continuo.
+💡 Estilo visual: ambientación minimalista, tonos oscuros y acentos de energía azul verdosa.
+
+🗺️ Estructura general
+
+El juego transcurre en un complejo subterráneo dividido en zonas interconectadas:
+
+Cámara de mantenimiento (tutorial interactivo)
+Galería rota
+Pasillos de energía
+Puente antiguo
+Núcleo apagado
+Cada zona introduce una nueva habilidad de movimiento y eleva la complejidad de los desafíos.
+
+🧩 Estado actual del proyecto
+
+🚧 En desarrollo
+Actualmente trabajando en:
+
+Sistema de físicas y control del personaje.
+Dash y doble salto funcionales.
+Diseño del primer nivel: Cámara de Mantenimiento.
+
+🛠️ Tecnologías
+
+Motor: Unity 2D
+Lenguaje: C#
+Arte: estilo minimalista con iluminación dinámica y reflejos metálicos suaves.
+
+Inspiración: Celeste, Inside, The Swapper, Ori and the Blind Forest
+
+📂 Estructura del proyecto
+📁 FragmentosDeAcero
+ ┣ 📂 Assets
+ ┃ ┣ 🎨 Art        → Tilesets, sprites, partículas
+ ┃ ┣ 🎧 Audio      → Música y efectos
+ ┃ ┣ 🧠 Scripts    → Movimiento, cámara, sistema modular
+ ┃ ┣ 🗺️ Scenes     → Niveles y áreas de prueba
+ ┣ 📄 README.md
+ ┗ ⚙️ ProjectSettings
+
+🌌 Objetivo
+
+Crear una experiencia fluida, introspectiva y visualmente expresiva,
+donde el movimiento es el lenguaje, y cada salto revela un fragmento del pasado.
