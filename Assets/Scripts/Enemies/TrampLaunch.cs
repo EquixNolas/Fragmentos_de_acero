@@ -12,7 +12,7 @@ public class TrampLaunch : MonoBehaviour
     [SerializeField] Animator trampAnimator;
 
     [SerializeField] Vector2 trampPosition;
-    [SerializeField] bool activatedTramp = false; 
+    //[SerializeField] bool activatedTramp = false; 
 
     PlayerMovement playerMovement;
     // Start is called before the first frame update

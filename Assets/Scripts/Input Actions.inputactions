@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "Input Actions",
     "maps": [
         {
@@ -18,7 +19,7 @@
                     "name": "Jump",
                     "type": "Button",
                     "id": "3c02ac2b-fbd7-466f-b048-dad8d83403f5",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -33,9 +34,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "DashDirection",
+                    "name": "DashDir",
                     "type": "Value",
-                    "id": "7dd58416-2747-4752-8368-911c82d954e3",
+                    "id": "4f7d4725-68f8-48d2-97e4-e25caa298f98",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
@@ -143,6 +144,28 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "Up",
+                    "id": "1510b265-64cc-49b3-85de-9ea9bf7f1899",
+                    "path": "<Gamepad>/leftStick/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Down",
+                    "id": "91b80543-17a6-4ba7-87cd-f8546c57576e",
+                    "path": "<Gamepad>/leftStick/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "",
                     "id": "0e5ac52b-d164-4e91-8c78-f928ffd13118",
                     "path": "<Keyboard>/space",
@@ -188,56 +211,56 @@
                 },
                 {
                     "name": "2D Vector",
-                    "id": "ea1ae981-06a6-4b7e-9f91-c51a188afdf0",
+                    "id": "db583b11-1479-4ab2-9cd0-e91baf268d14",
                     "path": "2DVector",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "DashDirection",
+                    "action": "DashDir",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "up",
-                    "id": "50639b9e-a288-4a36-9211-67c1b94d1345",
+                    "id": "ad6ec0fe-de18-4c39-8159-203a9093b779",
                     "path": "<Gamepad>/leftStick/up",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "DashDirection",
+                    "action": "DashDir",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
                     "name": "down",
-                    "id": "06d2dedb-ec72-458d-9015-1dc69f27c396",
+                    "id": "4eaefd04-b936-4ffc-87fc-1d27a74331f6",
                     "path": "<Gamepad>/leftStick/down",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "DashDirection",
+                    "action": "DashDir",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
                     "name": "left",
-                    "id": "71c22864-5c15-4a14-8aa0-9ef8da6eba0d",
+                    "id": "ffe8a2e6-b082-4c11-be17-cffe5f5297b5",
                     "path": "<Gamepad>/leftStick/left",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "DashDirection",
+                    "action": "DashDir",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
                     "name": "right",
-                    "id": "3180828c-e6db-40ce-b7f4-455624687d69",
+                    "id": "c2f36340-8614-4990-b990-3434bc37bf95",
                     "path": "<Gamepad>/leftStick/right",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "DashDirection",
+                    "action": "DashDir",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }

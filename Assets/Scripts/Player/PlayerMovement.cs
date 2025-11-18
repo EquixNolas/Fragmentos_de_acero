@@ -143,8 +143,8 @@ public class PlayerMovement : MonoBehaviour
                 jumpQueued = false; 
             }
         }
-        Debug.Log(pulsarBoton);
 
+        Debug.Log(dashInput);
         ActualizarAnimaciones(); //Se llama a la función de actualización de animaciones
     }
     public void ConsumeJumpOrButton()
@@ -182,7 +182,11 @@ public class PlayerMovement : MonoBehaviour
         horizontalMove = context.ReadValue<Vector2>().x; //Se obtiene el valor del movimiento
         dashInput = context.ReadValue<Vector2>(); //Se obtiene el valor del dashInput
     }
-
+    public void DashDir(InputAction.CallbackContext context)
+    {
+        dashInput = context.ReadValue<Vector2>(); //Se obtiene el valor del dashInput
+       
+    }
     void ActualizarAnimaciones()
     {
         if (!alive)

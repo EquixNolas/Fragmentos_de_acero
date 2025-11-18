@@ -28,7 +28,7 @@ public class TimeChanger : MonoBehaviour
         SlowDownOn();
         DestroyObjects();
         //TimeRecover();
-        Debug.Log(PlayerMovement.pulsarBoton);
+        //Debug.Log(PlayerMovement.pulsarBoton);
     }
 
     void SlowDownOn()
