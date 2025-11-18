@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     //MOVIMIENTO
     float horizontalMove; //Variable para el movimiento
     [Header("Movement")] //sección de movimiento
+    bool moverse;
     [SerializeField] float speed = 6f; //variable para la velocidad
     [SerializeField] bool lookDch = true; //Variable para mirar a la derecha
     [SerializeField] ParticleSystem dustParticle; //Partícula de polvo al caminar
@@ -92,10 +93,11 @@ public class PlayerMovement : MonoBehaviour
 
     Vector2 dashInput; // Variable para la dirección del dash
     Vector3 PlayerlocalScale; //Escala del objeto
-
+   [SerializeField] GameManager gameManager;
     // Start is called before the first frame update
     void Awake()
     {
+
         animator = GetComponent<Animator>(); //Se obtiene el componente Animator
         rb = GetComponent<Rigidbody2D>(); //Se obtiene el componente Rigidbody2D
         spriteRenderer = GetComponent<SpriteRenderer>(); //Se obtiene el componente SpriteRenderer
@@ -120,41 +122,51 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         //CoyoteTimeControl(); //Se llama a la función de control del tiempo de salto antes de caer
-        if (alive)
-        {
-            onSlowMo = timeChanger.onSlowMo;
-            Flip(); //Se llama a la función de giro
-            WallSlide(); //Se llama la función de deslizamiento por la pared
-            ProccessWallJump(); //Se llama a la función de salto de la pared
+        if (gameManager.pausa == false/* && gameManager.nowCanMove == true*/) 
+        { 
+            if (alive)
+            {
+                onSlowMo = timeChanger.onSlowMo;
+                Flip(); //Se llama a la función de giro
+                WallSlide(); //Se llama la función de deslizamiento por la pared
+                ProccessWallJump(); //Se llama a la función de salto de la pared
         
-            if (!isWallJumping) { fall(); } //Se llama la función de caída
+                if (!isWallJumping) { fall(); } //Se llama la función de caída
 
-            if (!isDashing && !isWallJumping)
-            {
-                Mover(); //Se llama la función de movimiento
-                Propulsion(); //Se llama la función de propulsión
-            }
+                if (!isDashing && !isWallJumping)
+                {
+                    Mover(); //Se llama la función de movimiento
+                    Propulsion(); //Se llama la función de propulsión
+                }
             
-            if (IsGrounded())
-            {
-                availableJumps = totalJumps;
-                jumpResetObject.SetActive(false);
+                if (IsGrounded())
+                {
+                    availableJumps = totalJumps;
+                    jumpResetObject.SetActive(false);
+                }
+
+                if (jumpQueued && availableJumps > 0) 
+                {
+                    DoJump();
+                    jumpQueued = false; 
+                }
             }
 
-            if (jumpQueued && availableJumps > 0) 
+            if (IsGrounded() && cooldownDone)
             {
-                DoJump();
-                jumpQueued = false; 
+                canDash = true;//Esto es temporal
             }
-        }
 
-        if (IsGrounded() && cooldownDone)
-        {
-            canDash = true;//Esto es temporal
-        }
+            //Debug.Log(dashInput);
+            ActualizarAnimaciones(); //Se llama a la función de actualización de animaciones
 
-        Debug.Log(dashInput);
-        ActualizarAnimaciones(); //Se llama a la función de actualización de animaciones
+        }
+        
+    }
+    public IEnumerator CanMove()
+    {
+        yield return new WaitForSeconds(1);
+        gameManager.nowCanMove = true;
     }
     public void ConsumeJumpOrButton()
     {
@@ -194,9 +206,11 @@ public class PlayerMovement : MonoBehaviour
         //Dash
         dashInput = moveVec;
 
-        
+        Debug.Log("Te mueves");
        
     }
+
+   
 
     public void Dash(InputAction.CallbackContext context)
     {

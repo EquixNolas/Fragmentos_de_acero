@@ -2,26 +2,64 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
-    TimeChanger TimeChanger;
+    
+    [SerializeField] GameObject pauseCanvas;
+    public GameObject firstSelectedButton;
+    public bool pausa =  false;
+    public bool nowCanMove = true;
     bool normalTime = false;
     private void Awake()
     {
-        TimeChanger = GameObject.Find("TimeSlow").GetComponent<TimeChanger>();
-    }
+        pauseCanvas.SetActive(false);
+         nowCanMove = true;
+}
     // Update is called once per frame
     void Update()
     {
-        normalTime = TimeChanger.normalTime;
-     
-        TimeRecover();
+
+        Debug.Log("Pausa es: "+pausa);
+
     }
 
-    void TimeRecover()
+
+   
+
+    public void Pausa(InputAction.CallbackContext context)
     {
-        Time.timeScale += (1f /TimeChanger.slowdownTime) * Time.unscaledDeltaTime;
-        Time.timeScale = Mathf.Clamp(Time.timeScale, 0f, 1f);
+        if (!pausa && context.started)
+        {
+            pauseCanvas.SetActive(true);
+            pausa = true;
+            nowCanMove = false;
+            Time.timeScale = 0.001f;
+            EventSystem.current.SetSelectedGameObject(null); // limpiar selección
+            EventSystem.current.SetSelectedGameObject(firstSelectedButton); // seleccionar botón
+        }
+
+        else if (pausa && context.started) 
+        {
+            pauseCanvas.SetActive(false) ;
+            pausa = false ;
+            Time.timeScale = 1f;
+
+        }   
+
     }
+
+    public void Reanudar()
+    {
+        if (pausa && pauseCanvas == true)
+        {
+            pauseCanvas.SetActive(false);
+            pausa = false;
+            Time.timeScale = 1f;
+        }
+    }
+
+
 }

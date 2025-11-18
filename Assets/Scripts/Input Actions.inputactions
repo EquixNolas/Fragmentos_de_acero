@@ -25,22 +25,22 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Dash",
+                    "name": "Pausa",
                     "type": "Button",
-                    "id": "6dad5286-3131-483f-9210-4eb5959ba349",
-                    "expectedControlType": "Button",
+                    "id": "a7155c01-3246-4433-9334-7968b2d62b7f",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "DashDir",
-                    "type": "Value",
-                    "id": "4f7d4725-68f8-48d2-97e4-e25caa298f98",
-                    "expectedControlType": "Vector2",
+                    "name": "Dash",
+                    "type": "Button",
+                    "id": "6dad5286-3131-483f-9210-4eb5959ba349",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -189,6 +189,28 @@
                 },
                 {
                     "name": "",
+                    "id": "39fc73e8-b107-419d-a001-4b25fd5c0776",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pausa",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cc3a9df3-8911-41a1-b9d1-d0041221f196",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pausa",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "8734e32b-8647-423a-8747-beea945a4944",
                     "path": "<Gamepad>/buttonEast",
                     "interactions": "",
@@ -208,61 +230,6 @@
                     "action": "Dash",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "2D Vector",
-                    "id": "db583b11-1479-4ab2-9cd0-e91baf268d14",
-                    "path": "2DVector",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "DashDir",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "ad6ec0fe-de18-4c39-8159-203a9093b779",
-                    "path": "<Gamepad>/leftStick/up",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "DashDir",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "4eaefd04-b936-4ffc-87fc-1d27a74331f6",
-                    "path": "<Gamepad>/leftStick/down",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "DashDir",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "ffe8a2e6-b082-4c11-be17-cffe5f5297b5",
-                    "path": "<Gamepad>/leftStick/left",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "DashDir",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "c2f36340-8614-4990-b990-3434bc37bf95",
-                    "path": "<Gamepad>/leftStick/right",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "DashDir",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 }
             ]
         }
