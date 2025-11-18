@@ -76,6 +76,7 @@ public class PlayerMovement : MonoBehaviour
     //DASHEO
     [Header("Dash")] //sección de dash
     [SerializeField] bool dashUnlock = false;
+    [SerializeField] bool cooldownDone = false;
     [SerializeField] float dashForce = 30f; // Fuerza del dash
     [SerializeField] float dashTime = 0.1f; // Duración del dash
     [SerializeField] float dashCooldown = 0.5f; // Tiempo entre dashes
@@ -147,7 +148,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        if (IsGrounded() || canDash)
+        if (IsGrounded() && cooldownDone)
         {
             canDash = true;//Esto es temporal
         }
@@ -375,6 +376,7 @@ public class PlayerMovement : MonoBehaviour
 
         isDashing = true;
         canDash = false;
+        cooldownDone = false;
 
         float elapsedTime = 0f;
 
@@ -424,7 +426,7 @@ public class PlayerMovement : MonoBehaviour
 
         // Cooldown
         yield return new WaitForSeconds(dashCooldown);
-        
+        cooldownDone = true;
     }
 
     //ACCIONES DE PERSONAJE
@@ -649,6 +651,14 @@ public class PlayerMovement : MonoBehaviour
                 animator.SetTrigger("death"); //Se activa la animación de muerte
                 alive = false; //Se desactiva la variable de vida
                 Die(); //Se llama a la función de muerte
+            }
+
+            if (collision.CompareTag("DashRefill"))
+            {
+                canDash = true;
+
+                // Opcional: destruir el objeto
+                Destroy(collision.gameObject);
             }
         }
     }
