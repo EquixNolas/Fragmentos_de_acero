@@ -79,14 +79,17 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float dashForce = 30f; // Fuerza del dash
     [SerializeField] float dashTime = 0.1f; // Duración del dash
     [SerializeField] float dashCooldown = 0.5f; // Tiempo entre dashes
+    [SerializeField] float verticalMultiplier = 0.65f;   // suaviza dash vertical
+    [SerializeField] float diagonalMultiplier = 0.8f;   // suaviza dash diagonal
+    [SerializeField] float maxVerticalDashSpeed = 12f;  // limita velocidad vertical del dash
 
     bool isDashing = false; //Variable para saber si se está haciendo dash
     bool canDash = true; //Variable para saber si se puede hacer dash
 
     TimeChanger timeChanger;
     bool onSlowMo;
-    Vector2 dashInput; // Variable para la dirección del dash
 
+    Vector2 dashInput; // Variable para la dirección del dash
     Vector3 PlayerlocalScale; //Escala del objeto
 
     // Start is called before the first frame update
@@ -144,6 +147,11 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        if (IsGrounded() || canDash)
+        {
+            canDash = true;//Esto es temporal
+        }
+
         Debug.Log(dashInput);
         ActualizarAnimaciones(); //Se llama a la función de actualización de animaciones
     }
@@ -179,14 +187,39 @@ public class PlayerMovement : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
-        horizontalMove = context.ReadValue<Vector2>().x; //Se obtiene el valor del movimiento
-        dashInput = context.ReadValue<Vector2>(); //Se obtiene el valor del dashInput
-    }
-    public void DashDir(InputAction.CallbackContext context)
-    {
-        dashInput = context.ReadValue<Vector2>(); //Se obtiene el valor del dashInput
+        Vector2 moveVec =context.ReadValue<Vector2>();
+        horizontalMove = moveVec.x; //Se obtiene el valor del movimiento
+
+        //Dash
+        dashInput = moveVec;
+
+        
        
     }
+
+    public void Dash(InputAction.CallbackContext context)
+    {
+        if(!alive || !dashUnlock || !canDash) return;
+        if (context.started && canDash && dashUnlock)
+        {
+            Vector2 direcion = dashInput;
+            if (direcion == Vector2.zero)
+                direcion = lookDch ? Vector2.right : Vector2.left;
+
+            // Si está en pared y no en suelo, empujar hacia fuera de la pared
+            if (WallCheck() && !IsGrounded())
+            {
+                direcion = lookDch ? Vector2.left : Vector2.right;
+                lookDch = !lookDch;
+                Vector3 escala = transform.localScale;
+                escala.x *= -1;
+                transform.localScale = escala;
+            }
+
+            StartCoroutine(DoDash(direcion.normalized));
+        }
+    }
+    
     void ActualizarAnimaciones()
     {
         if (!alive)
@@ -263,38 +296,135 @@ public class PlayerMovement : MonoBehaviour
             isPropulsing = false; //Se desactiva la variable de propulsión
         }
     }
-
-    //INPUT ACTION DE DASHEO
-    public void Dash(InputAction.CallbackContext context)
-    {
-        if (alive && dashUnlock)
+    //DASH ORIGINAL
+    /*
+        //INPUT ACTION DE DASHEO
+        public void Dash(InputAction.CallbackContext context)
         {
-            //Se verifica si se presiona el botón de dash y si se puede hacer dash
-            if (context.started && canDash)
+            if (alive && dashUnlock)
             {
-                Vector2 direcion = dashInput; //Se obtiene la dirección del dash
-                //Se verifica si la dirección del dash es cero
-                if (direcion == Vector2.zero)
+                //Se verifica si se presiona el botón de dash y si se puede hacer dash
+                if (context.started && canDash)
                 {
-                    direcion = lookDch ? Vector2.right : Vector2.left; //Se asigna la dirección del dash a la derecha o izquierda
+                    Vector2 direcion = dashInput; //Se obtiene la dirección del dash
+                    //Se verifica si la dirección del dash es cero
+                    if (direcion == Vector2.zero)
+                    {
+                        direcion = lookDch ? Vector2.right : Vector2.left; //Se asigna la dirección del dash a la derecha o izquierda
+                    }
+
+                    if(WallCheck() && !IsGrounded()) //Se verifica si el Player está en la pared y no está en el suelo
+                    {
+                        direcion = lookDch ? Vector2.left : Vector2.right; //Se asigna la dirección del dash a la derecha o izquierda
+                        lookDch = !lookDch; //Se cambia la dirección de la variable de giro
+                        Vector3 escala = transform.localScale; //Se obtiene la escala del objeto
+                        escala.x *= -1; //Se invierte la escala en el eje X
+                        transform.localScale = escala; //Se asigna la nueva escala al objeto
+                    }
+
+
+                    StartCoroutine(DoDash(direcion)); //Se inicia la corrutina del dash
                 }
 
-                if(WallCheck() && !IsGrounded()) //Se verifica si el Player está en la pared y no está en el suelo
-                {
-                    direcion = lookDch ? Vector2.left : Vector2.right; //Se asigna la dirección del dash a la derecha o izquierda
-                    lookDch = !lookDch; //Se cambia la dirección de la variable de giro
-                    Vector3 escala = transform.localScale; //Se obtiene la escala del objeto
-                    escala.x *= -1; //Se invierte la escala en el eje X
-                    transform.localScale = escala; //Se asigna la nueva escala al objeto
-                }
-
-
-                StartCoroutine(DoDash(direcion.normalized)); //Se inicia la corrutina del dash
             }
 
+
         }
-      
-       
+
+        //Corrutina para hacer el dash
+        IEnumerator DoDash(Vector2 direction)
+        {
+            isDashing = true; //Se activa la variable de dash
+            canDash = false; //Se desactiva la variable de dash
+            float elapsedTime = 0f; //Se inicializa el tiempo transcurrido
+
+            rb.gravityScale = 0f; //Se desactiva la gravedad del objeto
+            rb.linearVelocity = direction * dashForce; //Se aplica la fuerza del dash
+
+            animator.SetBool("dash", true); //Se activa la animación de dash
+
+            // Se activa el trail del dash u otro efecto visual
+            while (elapsedTime < dashTime)
+            {/*
+                if (dashGhostPrefab)
+                {
+                    Instantiate(dashGhostPrefab, transform.position, Quaternion.identity);
+                }
+             //
+                dashTrail.emitting = true; // Se activa el trail del dash
+                elapsedTime += 0.05f; // Se incrementa el tiempo transcurrido
+                yield return new WaitForSeconds(0.05f); //Se espera un tiempo
+            }
+
+            rb.gravityScale = normalGravityScale; //Se asigna la gravedad normal al objeto
+            animator.SetBool("dash", false); //Se Desactiva la animación de dash
+            dashTrail.emitting = false; // Se desactiva el trail del dash
+            //dashEffect.SetActive(false); // Se desactiva el efecto del dash
+            isDashing = false; //Se desactiva la variable de dash
+
+            yield return new WaitForSeconds(dashCooldown); //Se espera un tiempo para CoolDown
+            canDash = true; //Se activa la variable de poder dashear
+        }
+    */
+
+    //NUEVO DASH
+
+    IEnumerator DoDash(Vector2 direction)
+    {
+        if (isDashing || !canDash || !dashUnlock) yield break;
+
+        isDashing = true;
+        canDash = false;
+
+        float elapsedTime = 0f;
+
+        // Cancelar momentum previo para dash limpio
+        rb.linearVelocity = Vector2.zero;
+
+        // Desactivar gravedad durante dash
+        rb.gravityScale = 0f;
+
+        // Ajustar fuerza según tipo de dash
+        Vector2 dir = direction.normalized;
+        bool vertical = Mathf.Abs(dir.y) > 0.01f && Mathf.Abs(dir.x) <= 0.01f;
+        bool diagonal = Mathf.Abs(dir.x) > 0.01f && Mathf.Abs(dir.y) > 0.01f;
+
+        if (vertical)
+            dir *= verticalMultiplier;
+        else if (diagonal)
+            dir *= diagonalMultiplier;
+
+        // Asignar velocidad de dash (limitando componente vertical)
+        Vector2 dashVel = dir * dashForce;
+        dashVel.y = Mathf.Clamp(dashVel.y, -maxVerticalDashSpeed, maxVerticalDashSpeed);
+
+        rb.linearVelocity = dashVel;
+
+        // Animaciones / efectos
+        if (animator != null) animator.SetBool("dash", true);
+        if (dashTrail != null) dashTrail.emitting = true;
+
+        // Mantener el dash durante dashTime (usando pequeños pasos para mantener compatibilidad con tu loop anterior)
+        while (elapsedTime < dashTime)
+        {
+            elapsedTime += 0.05f;
+            yield return new WaitForSeconds(0.05f);
+        }
+
+        // Restaurar gravedad y suavizar la velocidad post-dash
+        rb.gravityScale = normalGravityScale;
+
+        // Reducir momentum tras dash para no quedarnos con una velocidad excesiva
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x * 0.6f, rb.linearVelocity.y * 0.6f);
+
+        if (animator != null) animator.SetBool("dash", false);
+        if (dashTrail != null) dashTrail.emitting = false;
+
+        isDashing = false;
+
+        // Cooldown
+        yield return new WaitForSeconds(dashCooldown);
+        
     }
 
     //ACCIONES DE PERSONAJE
@@ -494,40 +624,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    //Corrutina para hacer el dash
-    IEnumerator DoDash(Vector2 direction)
-    {
-        isDashing = true; //Se activa la variable de dash
-        canDash = false; //Se desactiva la variable de dash
-        float elapsedTime = 0f; //Se inicializa el tiempo transcurrido
-
-        rb.gravityScale = 0f; //Se desactiva la gravedad del objeto
-        rb.linearVelocity = direction * dashForce; //Se aplica la fuerza del dash
-
-        animator.SetBool("dash",true); //Se activa la animación de dash
-
-        // Se activa el trail del dash u otro efecto visual
-        while (elapsedTime < dashTime)
-        {/*
-            if (dashGhostPrefab)
-            {
-                Instantiate(dashGhostPrefab, transform.position, Quaternion.identity);
-            }
-         */
-            dashTrail.emitting = true; // Se activa el trail del dash
-            elapsedTime += 0.05f; // Se incrementa el tiempo transcurrido
-            yield return new WaitForSeconds(0.05f); //Se espera un tiempo
-        }
-
-        rb.gravityScale = normalGravityScale; //Se asigna la gravedad normal al objeto
-        animator.SetBool("dash", false); //Se Desactiva la animación de dash
-        dashTrail.emitting = false; // Se desactiva el trail del dash
-        //dashEffect.SetActive(false); // Se desactiva el efecto del dash
-        isDashing = false; //Se desactiva la variable de dash
-
-        yield return new WaitForSeconds(dashCooldown); //Se espera un tiempo para CoolDown
-        canDash = true; //Se activa la variable de poder dashear
-    }
+   
 
 
     private void OnTriggerEnter2D(Collider2D collision)
