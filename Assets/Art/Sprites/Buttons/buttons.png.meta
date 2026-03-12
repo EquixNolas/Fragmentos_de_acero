@@ -1,7 +1,10 @@
 fileFormatVersion: 2
-guid: 45eef696328c84447819f33069b98fa8
+guid: b45a556f4faa1b04f9819c0bee97a379
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -8191739510646017925
+    second: buttons_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -34,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -49,11 +52,11 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 420, y: 151, z: 164, w: 145}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
-  spriteTessellationDetail: 1
+  spriteTessellationDetail: -1
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
@@ -69,8 +72,8 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
+    maxTextureSize: 256
+    resizeAlgorithm: 1
     textureFormat: -1
     textureCompression: 0
     compressionQuality: 50
@@ -98,7 +101,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,33 +113,33 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Capa 4_0
+      name: buttons_0
       rect:
         serializedVersion: 2
-        x: 419
-        y: 151
-        width: 57
-        height: 64
+        x: 131
+        y: 176
+        width: 56
+        height: 59
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: eb4f41cedff1b9049a2c53caa4236136
-      internalID: -795609996
+      spriteID: b7079671158115e80800000000000000
+      internalID: -8191739510646017925
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Capa 4_1
+      name: buttons_1
       rect:
         serializedVersion: 2
-        x: 468
-        y: 216
+        x: 202
+        y: 113
         width: 56
         height: 60
       alignment: 0
@@ -147,86 +150,78 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3e108b2d3a8ba8941a4970965e14bbb1
-      internalID: -210491404
+      spriteID: 93b61dc3ceeb3724fbb26dda8223fe9e
+      internalID: 1970655594
       vertices: []
       indices: 
       edges: []
       weights: []
-    outline:
-    - - {x: -320, y: 180}
-      - {x: -320, y: -180}
-      - {x: 320, y: -180}
-      - {x: 320, y: 180}
-    - - {x: 87, y: -41}
-      - {x: 87, y: -28}
-      - {x: 68, y: -9}
-      - {x: 67, y: -9}
-      - {x: 67, y: 19}
-      - {x: 66, y: 20}
-      - {x: 66, y: 23}
-      - {x: 67, y: 24}
-      - {x: 66, y: 35}
-      - {x: 68, y: 33}
-      - {x: 92, y: 33}
-      - {x: 111, y: 52}
-      - {x: 111, y: 81}
-      - {x: 147, y: 82}
-      - {x: 145, y: 80}
-      - {x: 145, y: 52}
-      - {x: 164, y: 33}
-      - {x: 188, y: 33}
-      - {x: 190, y: 35}
-      - {x: 189, y: 24}
-      - {x: 190, y: 23}
-      - {x: 190, y: 20}
-      - {x: 189, y: 19}
-      - {x: 189, y: -11}
-      - {x: 190, y: -12}
-      - {x: 190, y: -15}
-      - {x: 189, y: -16}
-      - {x: 189, y: -37}
-      - {x: 184, y: -37}
-      - {x: 180, y: -41}
-      - {x: 164, y: -41}
-      - {x: 163, y: -42}
-      - {x: 160, y: -42}
-      - {x: 159, y: -41}
-      - {x: 97, y: -41}
-      - {x: 96, y: -42}
-      - {x: 93, y: -42}
-      - {x: 92, y: -41}
-    - - {x: 116, y: 37}
-      - {x: 98, y: 19}
-      - {x: 98, y: -13}
-      - {x: 116, y: -31}
-      - {x: 140, y: -31}
-      - {x: 158, y: -13}
-      - {x: 158, y: 19}
-      - {x: 140, y: 37}
-    - - {x: 161, y: 20}
-      - {x: 158, y: 19}
-      - {x: 158, y: 4}
-      - {x: 160, y: 2}
-      - {x: 163, y: 3}
-      - {x: 163, y: 12}
-      - {x: 164, y: 13}
-      - {x: 164, y: 16}
+    - serializedVersion: 2
+      name: buttons_2
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 49
+        width: 56
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41bd271be2b11a94bbfb30dddd9512dc
+      internalID: 1821786008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buttons_3
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 111
+        width: 55
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c4f8854e411a5649b3ce334d0684426
+      internalID: -340502401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    spriteID: d68f63ac675d72549aeac480c8364cf3
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Capa 4_0: -795609996
-      Capa 4_1: -210491404
+      buttons_0: -8191739510646017925
+      buttons_1: 1970655594
+      buttons_2: 1821786008
+      buttons_3: -340502401
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
