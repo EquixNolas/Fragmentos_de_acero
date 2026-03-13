@@ -682,7 +682,7 @@ public class PlayerMovement : MonoBehaviour
         respawnPosition = pos; //Se asigna la posición de respawn al objeto
     }
 
-    void Die()
+    public void Die()
     {
         StartCoroutine(Respawn(0.5f)); //Se inicia la corrutina de respawn
     }
