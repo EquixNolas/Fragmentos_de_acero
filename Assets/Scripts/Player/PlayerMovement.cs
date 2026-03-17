@@ -693,11 +693,11 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("move", 0f); //Se asigna el valor del movimiento al animator
 
         yield return new WaitForSeconds(2f); //Se espera un tiempo
-        rb.simulated = false; //Se desactiva la simulación del objeto
-        transform.localScale = new Vector3(0, 0, 0); //Se asigna la escala del objeto a cero
+        //rb.simulated = false; //Se desactiva la simulación del objeto
+        //transform.localScale = new Vector3(0, 0, 0); //Se asigna la escala del objeto a cero
 
         yield return new WaitForSeconds(waitTime); //Se espera un tiempo
-        rb.simulated = true; //Se activa la simulación del objeto
+        //rb.simulated = true; //Se activa la simulación del objeto
         transform.position = respawnPosition; //Se asigna la posición de respawn al objeto
         lookDch = true; //Se reinicia la dirección de giro
         rb.linearVelocity = Vector2.zero; //Se detiene el movimiento del objeto
