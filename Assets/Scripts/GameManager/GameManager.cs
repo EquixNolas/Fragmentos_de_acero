@@ -30,8 +30,6 @@ public class GameManager : MonoBehaviour
     }
 
 
-   
-
     public void Pausa(InputAction.CallbackContext context)
     {
         if (!pausa && context.started)
