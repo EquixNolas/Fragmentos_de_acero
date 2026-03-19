@@ -317,7 +317,7 @@ GameObject:
   - component: {fileID: 2508600208797841179}
   m_Layer: 8
   m_Name: GameObject
-  m_TagString: Untagged
+  m_TagString: Die
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -377,7 +377,7 @@ PolygonCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -393,12 +393,12 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.84476274, y: 0.63090366}
-      - {x: -1.1615976, y: 0.212844}
+    - - {x: -0.82658255, y: 0.57409054}
+      - {x: -1.0797868, y: 0.2060264}
       - {x: -1.2153356, y: -0.10450274}
       - {x: 0.20309341, y: -0.10201556}
-      - {x: 0.15758246, y: 0.3145525}
-      - {x: -0.080853745, y: 0.6339258}
+      - {x: 0.053046204, y: 0.3418228}
+      - {x: -0.119486704, y: 0.5771127}
   m_UseDelaunayMesh: 1
 --- !u!1 &1366705262744264214
 GameObject:
