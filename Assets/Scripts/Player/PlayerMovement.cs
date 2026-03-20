@@ -126,7 +126,7 @@ public class PlayerMovement : MonoBehaviour
         { 
             if (alive)
             {
-                onSlowMo = timeChanger.onSlowMo;
+                onSlowMo = timeChanger.normalTime;
                 Flip(); //Se llama a la función de giro
                 WallSlide(); //Se llama la función de deslizamiento por la pared
                 ProccessWallJump(); //Se llama a la función de salto de la pared
@@ -488,7 +488,7 @@ public class PlayerMovement : MonoBehaviour
             if (totalJumps == 2 && availableJumps == 1)
             {
                 isDoubleJumping = true; //Se activa la variable de doble salto
-                if (onSlowMo && !pulsarBoton)
+                if (!onSlowMo && !pulsarBoton)
                 {
                     pulsarBoton = true;
                 }
@@ -642,10 +642,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.CompareTag("_Respawn"))
-        {
-            //Die(); //Se llama a la función de muerte
-        }
         if (alive)
         {
             if(collision.gameObject.layer == LayerMask.NameToLayer("Reset Zone"))
@@ -684,7 +680,7 @@ public class PlayerMovement : MonoBehaviour
         StartCoroutine(Respawn(0.5f)); //Se inicia la corrutina de respawn
     }
 
-    IEnumerator Respawn(float waitTime)
+    public IEnumerator Respawn(float waitTime)
     {
         rb.linearVelocity = Vector2.zero; //Se detiene el movimiento del objeto
         animator.SetFloat("move", 0f); //Se asigna el valor del movimiento al animator
