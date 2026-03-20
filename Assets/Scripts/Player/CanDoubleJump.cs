@@ -12,9 +12,10 @@ public class CanDoubleJump : MonoBehaviour
             if (pm != null)
             {
                 pm.totalJumps = 2; //Desbloquea la habilidad
+                pm.availableJumps = 1;
                 Debug.Log("Double Jump unlocked!");
             }
-            Destroy(gameObject); // Elimina el pickup tras recogerlo
+            //Destroy(gameObject); // Elimina el pickup tras recogerlo
         }
     }
 }

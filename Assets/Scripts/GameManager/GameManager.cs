@@ -1,6 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using System;
+using TMPro;
+using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -8,13 +8,20 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    
+    [Header("PAUSE MENU")]//Titulo de la sección
     [SerializeField] GameObject pauseCanvas;
     public GameObject firstSelectedButton;
     string currentSceneName;
     public bool pausa =  false;
     public bool nowCanMove = true;
-    bool normalTime = false;
+
+    [Header("HUD MENU")]//Titulo de la sección
+    public int coins = 0;
+    [SerializeField] TextMeshProUGUI coinCount;
+
+    [Header("ABILITIES UNLOCKER")]//Titulo de la sección
+    [SerializeField] GameObject[] unlocker;
+
     private void Awake()
     {
         currentSceneName = SceneManager.GetActiveScene().name;
@@ -26,10 +33,13 @@ public class GameManager : MonoBehaviour
     {
 
         Debug.Log("Pausa es: "+pausa);
+        CountCoins();
 
     }
-
-
+    private void CountCoins()
+    {
+        coinCount.text = coins.ToString();
+    }
     public void Pausa(InputAction.CallbackContext context)
     {
         if (!pausa && context.started)

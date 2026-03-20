@@ -38,11 +38,11 @@ public class PlayerMovement : MonoBehaviour
     //SALTO
     [Header("Jump")] //sección de salto
     //public bool canDoubleJump = false; //Variable para el doble salto
-    [SerializeField] bool isDoubleJumping = false; //Variable para saber si se está haciendo doble salto
+    public bool isDoubleJumping = false; //Variable para saber si se está haciendo doble salto
     [SerializeField] float jumpForce = 10f; //Fuerza del salto
     public int totalJumps = 1; //Saltos extra 
     [SerializeField] bool jumpQueued = false;
-    [SerializeField] int availableJumps; //saltos disponibles
+    public int availableJumps; //saltos disponibles
     [SerializeField] float coyoteTime = 0.17f; //Tiempo de salto antes de caer
     [SerializeField] float coyoteCounter = 0.2f; //Contador del tiempo de salto antes de caer
     [SerializeField] float fallMultiplier = 1.2f; //Multiplicador de gravedad para caer más rápido
@@ -172,7 +172,7 @@ public class PlayerMovement : MonoBehaviour
     {
         pulsarBoton = false;
     }
-    bool IsGrounded() //Verifica si el Player está en el suelo
+    public bool IsGrounded() //Verifica si el Player está en el suelo
     {
         RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, 0.1f, groundLayer); //Se lanza un rayo hacia abajo desde el objeto
         RaycastHit2D hit2 = Physics2D.Raycast(groundCheck2.position, Vector2.down, 0.1f, groundLayer); //Se lanza un rayo hacia abajo desde el objeto
