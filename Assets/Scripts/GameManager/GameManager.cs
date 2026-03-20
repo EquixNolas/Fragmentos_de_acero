@@ -20,10 +20,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI coinCount;
 
     [Header("ABILITIES UNLOCKER")]//Titulo de la sección
-    [SerializeField] GameObject[] unlocker;
+    public GameObject[] skillUnlockers;
+    public int skillsCount;
 
     private void Awake()
     {
+        skillsCount = 0;
         currentSceneName = SceneManager.GetActiveScene().name;
         pauseCanvas.SetActive(false);
          nowCanMove = true;
@@ -78,6 +80,4 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(currentSceneName);
         Time.timeScale = 1f;
     }
-
-
 }

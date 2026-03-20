@@ -5,13 +5,13 @@ public class GetCoinControl : MonoBehaviour
 {
     [SerializeField] SpriteRenderer coinRenderer;
     PlayerMovement player;
-    GameManager manager;
+    GameManager gameManager;
     Color color;
     bool coinReach;
     
     private void Awake()
     {
-        manager = GameObject.Find("10_GAMEMANAGER").GetComponent<GameManager>();
+        gameManager = GameObject.Find("10_GAMEMANAGER").GetComponent<GameManager>();
         player = GameObject.Find("Player").GetComponent<PlayerMovement>();
         coinRenderer = GetComponent<SpriteRenderer>();
         color = coinRenderer.color;
@@ -31,13 +31,13 @@ public class GetCoinControl : MonoBehaviour
     private void Update()
     {
         GetCoin();
-        Debug.Log("Tus puntos son: " + manager.coins);
+        Debug.Log("Tus puntos son: " + gameManager.coins);
     }
     void GetCoin()
     {
         if (player.IsGrounded() && coinReach)
         {
-            manager.coins++;
+            gameManager.coins++;
             coinReach = false;
             GameObject padreGO = transform.parent.gameObject;
             padreGO.SetActive(false);
