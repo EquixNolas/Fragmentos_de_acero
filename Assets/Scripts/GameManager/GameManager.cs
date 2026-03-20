@@ -34,7 +34,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
 
-        Debug.Log("Pausa es: "+pausa);
         CountCoins();
 
     }

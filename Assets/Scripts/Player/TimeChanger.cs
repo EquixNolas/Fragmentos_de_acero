@@ -16,6 +16,8 @@ public class TimeChanger : MonoBehaviour
     [SerializeField] GameObject canvas;
     TimeChanger timeChanger;
     PlayerMovement  PlayerMovement;
+    GameManager gameManager;
+
     private void Awake()
     {
         activeSlowdown = false;
@@ -29,12 +31,12 @@ public class TimeChanger : MonoBehaviour
     {
         normalTime = timeChanger.normalTime;
         SlowDownOn();
-        DestroyObjects();
-        if (activeSlowdown)
+       // DestroyObjects();
+        if (!activeSlowdown)
         {
             TimeRecover();
         }
-
+        Debug.Log("Slowdown is: " + activeSlowdown);
         //TimeRecover();
         //Debug.Log(PlayerMovement.pulsarBoton);
     }

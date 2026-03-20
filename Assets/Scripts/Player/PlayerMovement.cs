@@ -205,9 +205,6 @@ public class PlayerMovement : MonoBehaviour
 
         //Dash
         dashInput = moveVec;
-
-        Debug.Log("Te mueves");
-       
     }
 
    

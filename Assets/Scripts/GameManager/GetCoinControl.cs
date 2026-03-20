@@ -25,13 +25,12 @@ public class GetCoinControl : MonoBehaviour
             color.a = 0.06f;
             coinRenderer.color = color;
             coinReach = true;
-            Debug.Log("Core");
+            //Debug.Log("Core");
         }
     }
     private void Update()
     {
         GetCoin();
-        Debug.Log("Tus puntos son: " + gameManager.coins);
     }
     void GetCoin()
     {
@@ -41,7 +40,6 @@ public class GetCoinControl : MonoBehaviour
             coinReach = false;
             GameObject padreGO = transform.parent.gameObject;
             padreGO.SetActive(false);
-            Debug.Log("Consigues el coin");
         }
     }
 }
