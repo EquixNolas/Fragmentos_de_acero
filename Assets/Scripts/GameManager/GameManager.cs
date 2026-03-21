@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
         {
            TimeRecover();
         }
+        Debug.Log("Tiempo de Ejecución: " + Time.deltaTime);
 
     }
     private void CountCoins()
@@ -91,7 +92,7 @@ public class GameManager : MonoBehaviour
     }
     public void TimeRecover()
     {
-        Time.timeScale += (1f / time.slowdownTime) * Time.unscaledDeltaTime;
+        Time.timeScale += (1f / time.slowDownTimer) * Time.unscaledDeltaTime;
         Time.timeScale = Mathf.Clamp(Time.timeScale, 0f, 1f);
     }
 }

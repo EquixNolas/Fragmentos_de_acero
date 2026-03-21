@@ -6,7 +6,7 @@ using UnityEngine;
 public class TimeChanger : MonoBehaviour
 {
     float slowdown = 0.05f;
-    public float slowdownTime = 0.5f;
+    public float slowDownTimer = 0.5f;
 
     public bool activeSlowdown = false;
    // public bool onSlowMo;

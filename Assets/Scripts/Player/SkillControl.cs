@@ -24,6 +24,8 @@ public class SkillControl : MonoBehaviour
         {
             if (gameManager.skillsCount != 0)
             {
+                time.normalTime = true;
+                time.activeSlowdown = false;
                 skillUnlocker[gameManager.skillsCount - 1].SetActive(false);
                 timeSlower[gameManager.skillsCount - 1].SetActive(false);
 
@@ -41,13 +43,23 @@ public class SkillControl : MonoBehaviour
                 skillUnlocker[gameManager.skillsCount].SetActive(true);
                 Debug.Log(skillUnlocker[gameManager.skillsCount]);
 
-                pm.totalJumps = 2; //Desbloquea la habilidad
-                pm.availableJumps = 1;
+                StartCoroutine(WaitTime(0.05f));
 
                 gameManager.skillsCount++;
                 //Debug.Log("Double Jump unlocked!"); 
             }
         } 
+    }
+
+    IEnumerator WaitTime(float waitTime)
+    {
+        //Debug.Log("Dentro del WaitTime");
+        yield return new WaitForSeconds(waitTime);
+        //Debug.Log("Despues del WaitTime");
+        
+            pm.totalJumps = 2; //Desbloquea la habilidad
+            pm.availableJumps = 1;
+        
     }
     
 }
