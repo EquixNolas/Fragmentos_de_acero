@@ -20,10 +20,15 @@ public class SkillControl : MonoBehaviour
     }
     private void Update()
     {
-        Debug.Log(gameManager.skillsCount);
-        if(time.activeSlowdown || pm.isDoubleJumping)
+        if (!time.activeSlowdown || pm.isDoubleJumping)
         {
-            skillUnlocker[gameManager.skillsCount].SetActive(false);
+            if (gameManager.skillsCount != 0)
+            {
+                skillUnlocker[gameManager.skillsCount - 1].SetActive(false);
+                timeSlower[gameManager.skillsCount - 1].SetActive(false);
+
+            }
+            //activeSlowMo.SetActive(false);
         }
     }
     private void OnTriggerEnter2D(Collider2D other) 
@@ -31,11 +36,16 @@ public class SkillControl : MonoBehaviour
         if (other.CompareTag("Player")) 
         { 
             PlayerMovement pm = other.GetComponent<PlayerMovement>();
-            if (pm != null && gameManager.skillsCount == 0) { 
+            if (pm != null && gameManager.skillsCount == 0) {
+                
+                skillUnlocker[gameManager.skillsCount].SetActive(true);
+                Debug.Log(skillUnlocker[gameManager.skillsCount]);
+
                 pm.totalJumps = 2; //Desbloquea la habilidad
                 pm.availableJumps = 1;
+
                 gameManager.skillsCount++;
-                Debug.Log("Double Jump unlocked!"); 
+                //Debug.Log("Double Jump unlocked!"); 
             }
         } 
     }
