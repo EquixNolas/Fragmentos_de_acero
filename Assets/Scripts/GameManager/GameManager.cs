@@ -23,18 +23,28 @@ public class GameManager : MonoBehaviour
     public GameObject[] skillUnlockers;
     public int skillsCount;
 
+    [Header("TIME CONTROL")]
+    [SerializeField] PlayerMovement pm;
+    [SerializeField]TimeChanger time;
+
     private void Awake()
     {
-        skillsCount = 0;
+        pm = GameObject.Find("Player").GetComponent<PlayerMovement>();
+        time= GameObject.Find("TimeSlow").GetComponent<TimeChanger>();
         currentSceneName = SceneManager.GetActiveScene().name;
         pauseCanvas.SetActive(false);
-         nowCanMove = true;
+        nowCanMove = true;
+        skillsCount = 0;
 }
     // Update is called once per frame
     void Update()
     {
 
         CountCoins();
+        if (!time.activeSlowdown || pm.isDoubleJumping)
+        {
+           TimeRecover();
+        }
 
     }
     private void CountCoins()
@@ -78,5 +88,10 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(currentSceneName);
         Time.timeScale = 1f;
+    }
+    public void TimeRecover()
+    {
+        Time.timeScale += (1f / time.slowdownTime) * Time.unscaledDeltaTime;
+        Time.timeScale = Mathf.Clamp(Time.timeScale, 0f, 1f);
     }
 }

@@ -8,21 +8,21 @@ public class TimeChanger : MonoBehaviour
     float slowdown = 0.05f;
     public float slowdownTime = 0.5f;
 
-    bool activeSlowdown = false;
+    public bool activeSlowdown = false;
    // public bool onSlowMo;
     public bool normalTime;
 
     [SerializeField] GameObject[] objects; 
     [SerializeField] GameObject canvas;
     TimeChanger timeChanger;
-    PlayerMovement  PlayerMovement;
+    PlayerMovement  pm;
     GameManager gameManager;
 
     private void Awake()
     {
         activeSlowdown = false;
-        PlayerMovement = GameObject.Find("Player").GetComponent<PlayerMovement>();
-        timeChanger = GameObject.Find("TimeSlow").GetComponent<TimeChanger>();
+        pm = GameObject.Find("Player").GetComponent<PlayerMovement>();
+        timeChanger = gameObject.GetComponent<TimeChanger>();    
         //onSlowMo = false;
         normalTime = false;
         //canvas.SetActive(false);
@@ -32,20 +32,11 @@ public class TimeChanger : MonoBehaviour
         normalTime = timeChanger.normalTime;
         SlowDownOn();
        // DestroyObjects();
-        if (!activeSlowdown)
-        {
-            TimeRecover();
-        }
+        
         Debug.Log("Slowdown is: " + activeSlowdown);
-        //TimeRecover();
-        //Debug.Log(PlayerMovement.pulsarBoton);
     }
 
-    void TimeRecover()
-    {
-        Time.timeScale += (1f / slowdownTime) * Time.unscaledDeltaTime;
-        Time.timeScale = Mathf.Clamp(Time.timeScale, 0f, 1f);
-    }
+   
     void SlowDownOn()
     {
         if (activeSlowdown)
@@ -58,28 +49,24 @@ public class TimeChanger : MonoBehaviour
 
     void DestroyObjects()
     {
-        if (normalTime || PlayerMovement.pulsarBoton)
+        if (normalTime || pm.pulsarBoton)
         {
             Destroy(objects[0]);
             Destroy(objects[1]);
             Time.timeScale = 1f;
             activeSlowdown = false;
-            PlayerMovement.ConsumeJumpOrButton();
+            pm.ConsumeJumpOrButton();
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //onSlowMo=true;
         normalTime = false;
         activeSlowdown = true;
-        //Debug.Log("Activa SlowMo");
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        //onSlowMo=false;
         normalTime = true;
         activeSlowdown = false;
-        //Debug.Log("DesactivaSlowMo");
     }
 
 
