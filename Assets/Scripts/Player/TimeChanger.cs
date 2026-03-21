@@ -33,7 +33,6 @@ public class TimeChanger : MonoBehaviour
         SlowDownOn();
        // DestroyObjects();
         
-        Debug.Log("Slowdown is: " + activeSlowdown);
     }
 
    

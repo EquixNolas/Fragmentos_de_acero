@@ -45,7 +45,6 @@ public class GameManager : MonoBehaviour
         {
            TimeRecover();
         }
-        Debug.Log("Tiempo de Ejecución: " + Time.deltaTime);
 
     }
     private void CountCoins()
