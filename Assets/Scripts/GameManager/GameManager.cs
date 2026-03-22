@@ -25,12 +25,14 @@ public class GameManager : MonoBehaviour
 
     [Header("TIME CONTROL")]
     [SerializeField] PlayerMovement pm;
-    [SerializeField]TimeChanger time;
+    [SerializeField]TimeChanger timeChanger;
+    public bool playerInsideSlowMo = false;
 
     private void Awake()
     {
+        Time.timeScale = 1f;
         pm = GameObject.Find("Player").GetComponent<PlayerMovement>();
-        time= GameObject.Find("TimeSlow").GetComponent<TimeChanger>();
+        timeChanger= GameObject.FindGameObjectWithTag("TimeSlowMo").GetComponent<TimeChanger>();
         currentSceneName = SceneManager.GetActiveScene().name;
         pauseCanvas.SetActive(false);
         nowCanMove = true;
@@ -41,7 +43,7 @@ public class GameManager : MonoBehaviour
     {
 
         CountCoins();
-        if (!time.activeSlowdown || pm.isDoubleJumping)
+        if (!timeChanger.activeSlowdown || pm.isDoubleJumping)
         {
            TimeRecover();
         }
@@ -91,7 +93,17 @@ public class GameManager : MonoBehaviour
     }
     public void TimeRecover()
     {
-        Time.timeScale += (1f / time.slowDownTimer) * Time.unscaledDeltaTime;
-        Time.timeScale = Mathf.Clamp(Time.timeScale, 0f, 1f);
+        //Evitamos la división por cero
+        float recoverySpeed = Mathf.Max(0.1f, timeChanger.slowDownTimer);
+
+        //Calculo del incremento
+        float increment = (1f / recoverySpeed) * Time.unscaledDeltaTime;
+
+        //Aplicamos y limitamos (Clamp) el valor resultante
+        Time.timeScale += increment;
+        Time.timeScale = Mathf.Clamp(Time.timeScale, 0.05f, 1f);
+
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
     }
+
 }

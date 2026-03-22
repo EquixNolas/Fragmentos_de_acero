@@ -76,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
 
     //DASHEO
     [Header("Dash")] //sección de dash
-    [SerializeField] bool dashUnlock = false;
+    public bool dashUnlock = false;
     [SerializeField] bool cooldownDone = false;
     [SerializeField] float dashForce = 30f; // Fuerza del dash
     [SerializeField] float dashTime = 0.1f; // Duración del dash
@@ -101,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponent<Animator>(); //Se obtiene el componente Animator
         rb = GetComponent<Rigidbody2D>(); //Se obtiene el componente Rigidbody2D
         spriteRenderer = GetComponent<SpriteRenderer>(); //Se obtiene el componente SpriteRenderer
-        timeChanger = GameObject.Find("TimeSlow").GetComponent<TimeChanger>();
+        timeChanger = GameObject.FindGameObjectWithTag("TimeSlowMo").GetComponent<TimeChanger>();
         //dashEffect.SetActive(false); //Se desactiva el efecto del dash
         vecGravity = new Vector2(0, -Physics2D.gravity.y); //Se obtine la gravedad del objeto
         normalGravityScale = rb.gravityScale;   //Se guarda la gravedad normal del objeto

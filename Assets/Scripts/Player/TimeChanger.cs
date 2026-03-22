@@ -6,17 +6,17 @@ using UnityEngine;
 public class TimeChanger : MonoBehaviour
 {
     float slowdown = 0.05f;
-    public float slowDownTimer = 0.5f;
+    float targetScale;
 
-    public bool activeSlowdown = false;
-   // public bool onSlowMo;
+    [Header("TIME VARIABLES")]//Titulo de la sección
     public bool normalTime;
+    public float slowDownTimer = 0.5f;
+    public bool activeSlowdown = false;
 
-    [SerializeField] GameObject[] objects; 
-    [SerializeField] GameObject canvas;
+    [Header("CANVAS OBJECTS")]//Titulo de la sección
+    [SerializeField] GameObject canva;
     TimeChanger timeChanger;
     PlayerMovement  pm;
-    GameManager gameManager;
 
     private void Awake()
     {
@@ -25,27 +25,26 @@ public class TimeChanger : MonoBehaviour
         timeChanger = gameObject.GetComponent<TimeChanger>();    
         //onSlowMo = false;
         normalTime = false;
-        //canvas.SetActive(false);
     }
+
     private void Update()
     {
         normalTime = timeChanger.normalTime;
         SlowDownOn();
-       // DestroyObjects();
-        
     }
-
    
     void SlowDownOn()
     {
-        if (activeSlowdown)
+        targetScale = activeSlowdown ? slowdown : 1f;
+
+        // Solo actualizamos si el valor ha cambiado
+        if (Time.timeScale != targetScale)
         {
-            //canvas.SetActive (true);
-            Time.timeScale = slowdown;
-            Time.fixedDeltaTime = Time.timeScale * 0.02f;
+            Time.timeScale = targetScale;
+            Time.fixedDeltaTime = 0.02f * Time.timeScale;
         }
     }
-
+    /*
     void DestroyObjects()
     {
         if (normalTime || pm.pulsarBoton)
@@ -56,7 +55,7 @@ public class TimeChanger : MonoBehaviour
             activeSlowdown = false;
             pm.ConsumeJumpOrButton();
         }
-    }
+    }*/
     private void OnTriggerEnter2D(Collider2D collision)
     {
         normalTime = false;

@@ -1,67 +1,108 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-public class SkillControl : MonoBehaviour 
+public class SkillControl : MonoBehaviour
 {
-    [Header ("Script Declaration")]
+    [Header("Script Declaration")]
     [SerializeField] GameManager gameManager;
     [SerializeField] PlayerMovement pm;
-    [SerializeField] TimeChanger time;
+    [SerializeField] TimeChanger timeChanger; // Cambiado el nombre para evitar conflictos con 'time' de C#
 
-    [Header ("GameObjects")]
-    [SerializeField] GameObject[] skillUnlocker; 
-    [SerializeField] GameObject[] timeSlower;
-    private void Awake() 
+    [Header("GameObjects")]
+    [SerializeField] private GameObject[] skillUnlocker;
+    [SerializeField] private GameObject[] timeSlower;
+    [SerializeField] private Animator animatorButtons;
+
+    private bool skillProcessed = false;
+    public bool isPlayerInside;
+
+    private void Awake()
     {
+        
         gameManager = GameObject.Find("10_GAMEMANAGER").GetComponent<GameManager>();
         pm = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
-        time = GameObject.FindGameObjectWithTag("TimeSlowMo").GetComponent<TimeChanger>();
-        Debug.Log(gameManager.skillsCount);
-
+        timeChanger = GameObject.FindGameObjectWithTag("TimeSlowMo").GetComponent<TimeChanger>();
+        isPlayerInside = gameManager.playerInsideSlowMo;
     }
+
     private void Update()
     {
-        if (!time.activeSlowdown || pm.isDoubleJumping)
+        if (isPlayerInside)
         {
-           
-            time.normalTime = true;
-            time.activeSlowdown = false;
-            Debug.Log("Doble Salto: " + pm.isDoubleJumping);
-            Debug.Log("El SlowDown Está: " + time.activeSlowdown);
-            if(gameManager.skillsCount > 0)
+            if (gameManager.skillsCount > 0)
             {
-               // skillUnlocker[0].SetActive(false);
-                //timeSlower[0].SetActive(false);
-                Debug.Log(gameManager.skillsCount);
+                //ReturnToNormalTime();
+                Debug.Log("Debe Funcionar");
             }
         }
+
+        Debug.Log("Habilidades: "+ gameManager.skillsCount);
     }
-    private void OnTriggerEnter2D(Collider2D other) 
-    { 
-        if (other.CompareTag("Player")) 
-        { 
-            PlayerMovement pm = other.GetComponent<PlayerMovement>();
-            if (pm != null && gameManager.skillsCount == 0) {
-                
-                skillUnlocker[gameManager.skillsCount].SetActive(true);
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player") && !skillProcessed)
+        {
+            skillProcessed = true; // Bloqueamos futuras ejecuciones inmediatas
+            isPlayerInside = true;
+            gameManager.playerInsideSlowMo = isPlayerInside;
+
+            if (gameManager.skillsCount == 0)
+            {
+                // 1. Mostramos el texto/UI
+                animatorButtons.SetInteger("ButtonNext", gameManager.skillsCount);
+                skillUnlocker[0].SetActive(true);
+
+                // 2. Activamos el SlowMo (TimeChanger se encarga del TimeScale)
+                timeChanger.activeSlowdown = true;
+                timeChanger.normalTime = false;
+
+                // 3. Desbloqueo de habilidad
                 StartCoroutine(WaitTime(0.05f));
-
-                gameManager.skillsCount++;
-                Debug.Log("Double Jump unlocked!"); 
+                pm.totalJumps = 2;
+                pm.availableJumps = 1;
+                Debug.Log("Double Jump unlocked!");
             }
-        } 
+
+            else if(gameManager.skillsCount == 1)
+            {
+                skillUnlocker[0].SetActive(true);
+                animatorButtons.SetInteger("ButtonNext", gameManager.skillsCount);
+                Debug.Log("Dash Desbloqueado");
+                pm.dashUnlock = true;
+            }
+            gameManager.skillsCount++;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            ReturnToNormalTime();
+            skillProcessed = false;
+        }
+    }
+
+    void ReturnToNormalTime()
+    {
+        DesactivateUI();
+        isPlayerInside = false;
+        gameManager.playerInsideSlowMo = isPlayerInside;
+        timeChanger.normalTime = true;
+        timeChanger.activeSlowdown = false;
+    }
+
+    void DesactivateUI()
+    {
+        // Usamos un bucle para apagar todo lo que esté encendido
+        foreach (GameObject ui in skillUnlocker) ui.SetActive(false);
+        foreach (GameObject slow in timeSlower) slow.SetActive(false);
     }
 
     IEnumerator WaitTime(float waitTime)
     {
-        //Debug.Log("Dentro del WaitTime");
-        yield return new WaitForSeconds(waitTime);
-        //Debug.Log("Despues del WaitTime");
-        
-            pm.totalJumps = 2; //Desbloquea la habilidad
-            pm.availableJumps = 1;
-        
+        //WaitForSecondsRealtime porque el Time.timeScale es muy bajo
+        yield return new WaitForSecondsRealtime(1.5f);
+        DesactivateUI();
     }
-    
 }

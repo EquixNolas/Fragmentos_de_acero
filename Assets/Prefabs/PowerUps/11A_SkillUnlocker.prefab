@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9148026953422534998}
   - component: {fileID: 3936314853457377676}
   - component: {fileID: 2905887188665642261}
-  - component: {fileID: 4006172544478912530}
+  - component: {fileID: 4911249509785466576}
   m_Layer: 0
   m_Name: TimeSlow
   m_TagString: TimeSlowMo
@@ -92,30 +92,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6386850afdeabf4a82192c265abb496, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  normalTime: 0
   slowDownTimer: 0.1
   activeSlowdown: 0
-  normalTime: 0
-  objects: []
-  canvas: {fileID: 2187200814724600730}
---- !u!114 &4006172544478912530
+  canva: {fileID: 0}
+--- !u!114 &4911249509785466576
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1248519305284720631}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 29f39191626a4624c83e4f60980060bb, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CanDoubleJump
+  m_EditorClassIdentifier: Assembly-CSharp::SkillControl
   gameManager: {fileID: 0}
   pm: {fileID: 0}
-  time: {fileID: 0}
+  timeChanger: {fileID: 2905887188665642261}
   skillUnlocker:
   - {fileID: 1361310392076913145}
   timeSlower:
   - {fileID: 1248519305284720631}
+  animatorButtons: {fileID: 4667583452194446522}
+  isPlayerInside: 0
 --- !u!1 &1361310392076913145
 GameObject:
   m_ObjectHideFlags: 0
@@ -126,7 +127,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4143863485764101267}
   m_Layer: 0
-  m_Name: DoubleJump
+  m_Name: UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
